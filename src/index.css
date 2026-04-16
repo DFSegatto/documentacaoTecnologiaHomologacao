@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: #f8f7f4;
+  color: #1a1a1a;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Editor Tiptap */
+.tiptap-editor { min-height: 280px; outline: none; font-size: 15px; line-height: 1.75; }
+.tiptap-editor p { margin: 0 0 0.75em; }
+.tiptap-editor h2 { font-size: 1.3rem; font-weight: 600; margin: 1.2em 0 0.5em; }
+.tiptap-editor h3 { font-size: 1.1rem; font-weight: 600; margin: 1em 0 0.4em; }
+.tiptap-editor ul, .tiptap-editor ol { padding-left: 1.5em; margin: 0.5em 0; }
+.tiptap-editor li { margin: 0.2em 0; }
+.tiptap-editor strong { font-weight: 600; }
+.tiptap-editor em { font-style: italic; }
+.tiptap-editor code { font-family: 'DM Mono', monospace; font-size: 0.88em; background: #f0ede8; padding: 0.1em 0.35em; border-radius: 4px; }
+.tiptap-editor blockquote { border-left: 3px solid #d1cdc7; padding-left: 1em; color: #6b6b6b; margin: 0.75em 0; }
+.tiptap-editor img { max-width: 100%; border-radius: 8px; margin: 0.75em 0; }
+.tiptap-editor a { color: #4f46e5; text-decoration: underline; }
+.tiptap-editor p.is-editor-empty:first-child::before { content: attr(data-placeholder); color: #a8a29e; pointer-events: none; float: left; height: 0; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d1cdc7; border-radius: 3px; }
