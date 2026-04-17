@@ -72,10 +72,12 @@ export default function MuralAvisos() {
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-brand-500 animate-pulse" />
-          <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+          <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-100">
             Novidades do sistema
           </h2>
-          <span className="text-xs font-medium px-1.5 py-0.5 bg-brand-100 dark:bg-brand-900/50 text-brand-700 dark:text-brand-200 rounded-full">
+          <span className="text-xs font-medium tabular-nums min-w-[1.25rem] text-center px-1.5 py-0.5 rounded-full
+            bg-brand-100 text-brand-800
+            dark:bg-brand-600 dark:text-white dark:ring-1 dark:ring-brand-500/80">
             {visiveis.length}
           </span>
         </div>
