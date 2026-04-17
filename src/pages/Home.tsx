@@ -6,7 +6,6 @@ import Navbar from '../components/Navbar'
 import CategoriaBadge from '../components/CategoriaBadge'
 import Footer from '../components/Footer'
 import MuralAvisos from '../components/MuralAvisos'
-import LinksDocumentacaoSenior from '../components/LinksDocumentacaoSenior'
 
 interface RegistroLista {
   id: string
@@ -152,8 +151,6 @@ export default function Home({ user }: { user: User | null }) {
       <main className="max-w-6xl mx-auto px-4 py-8">
 
         <MuralAvisos />
-
-        <LinksDocumentacaoSenior />
 
         {/* Header */}
         <div className="mb-6">
