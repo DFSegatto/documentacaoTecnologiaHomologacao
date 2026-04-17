@@ -1,8 +1,22 @@
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { DOCS_SENIOR_NOTAS_VERSAO } from '../lib/documentacaoSenior'
 
 export default function Navbar({ userEmail }: { userEmail?: string | null }) {
   const navigate = useNavigate()
+  const [menuDocsAberto, setMenuDocsAberto] = useState(false)
+  const refMenuDocs = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function fecharAoClicarFora(e: MouseEvent) {
+      if (refMenuDocs.current && !refMenuDocs.current.contains(e.target as Node)) {
+        setMenuDocsAberto(false)
+      }
+    }
+    document.addEventListener('mousedown', fecharAoClicarFora)
+    return () => document.removeEventListener('mousedown', fecharAoClicarFora)
+  }, [])
   async function handleLogout() {
     await supabase.auth.signOut()
     navigate('/login')
@@ -40,6 +54,51 @@ export default function Navbar({ userEmail }: { userEmail?: string | null }) {
             </svg>
             <span className="hidden sm:inline">Categorias</span>
           </Link>
+
+          <div className="relative" ref={refMenuDocs}>
+            <button
+              type="button"
+              onClick={() => setMenuDocsAberto(v => !v)}
+              aria-expanded={menuDocsAberto}
+              aria-haspopup="true"
+              className={`flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg transition
+                ${menuDocsAberto ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100'}`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+              <span className="hidden sm:inline">Documentação</span>
+            </button>
+            {menuDocsAberto && (
+              <div
+                role="menu"
+                className="absolute right-0 mt-1 w-[min(100vw-2rem,20rem)] rounded-xl border border-gray-200 bg-white py-1 shadow-lg z-50"
+              >
+                <p className="px-3 py-2 text-xs font-medium text-gray-400 uppercase tracking-wide border-b border-gray-100">
+                  Notas de versão Senior
+                </p>
+                {DOCS_SENIOR_NOTAS_VERSAO.map(doc => (
+                  <a
+                    key={doc.id}
+                    role="menuitem"
+                    href={doc.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMenuDocsAberto(false)}
+                    className="flex items-start gap-2 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+                  >
+                    <svg className="w-4 h-4 mt-0.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                    <span>{doc.titulo}</span>
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+
           <Link to="/registros/novo"
             className="flex items-center gap-1.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 py-1.5 rounded-lg transition ml-1">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
