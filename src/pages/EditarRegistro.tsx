@@ -72,7 +72,7 @@ export default function EditarRegistro({ user }: { user: User | null }) {
   }, [id])
 
   if (loading) return (
-    <div className="min-h-screen bg-[#f8f7f4] flex flex-col">
+    <div className="min-h-screen bg-[#f8f7f4] dark:bg-gray-950 flex flex-col">
       <Navbar userEmail={user?.email} />
       <div className="flex items-center justify-center py-32">
         <div className="w-6 h-6 border-2 border-brand-600 border-t-transparent rounded-full animate-spin" />
@@ -81,27 +81,27 @@ export default function EditarRegistro({ user }: { user: User | null }) {
   )
 
   if (!registro) return (
-    <div className="min-h-screen bg-[#f8f7f4] flex flex-col">
+    <div className="min-h-screen bg-[#f8f7f4] dark:bg-gray-950 flex flex-col">
       <Navbar userEmail={user?.email} />
       <div className="text-center py-32">
-        <p className="font-medium text-gray-700">Registro não encontrado</p>
-        <Link to="/" className="text-sm text-brand-600 hover:underline mt-2 inline-block">Voltar</Link>
+        <p className="font-medium text-gray-700 dark:text-gray-300">Registro não encontrado</p>
+        <Link to="/" className="text-sm text-brand-600 dark:text-brand-400 hover:underline mt-2 inline-block">Voltar</Link>
       </div>
     </div>
   )
 
   return (
-    <div className="min-h-screen bg-[#f8f7f4] flex flex-col">
+    <div className="min-h-screen bg-[#f8f7f4] dark:bg-gray-950 flex flex-col">
       <Navbar userEmail={user?.email} />
       <main className="max-w-3xl mx-auto px-4 py-8 flex-1">
-        <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
-          <Link to="/" className="hover:text-gray-600 transition">Registros</Link>
+        <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 mb-6">
+          <Link to="/" className="hover:text-gray-600 dark:hover:text-gray-300 transition">Registros</Link>
           <span>/</span>
-          <Link to={`/registros/${id}`} className="hover:text-gray-600 transition truncate max-w-xs">
+          <Link to={`/registros/${id}`} className="hover:text-gray-600 dark:hover:text-gray-300 transition truncate max-w-xs">
             {registro.titulo}
           </Link>
           <span>/</span>
-          <span className="text-gray-700">Editar</span>
+          <span className="text-gray-700 dark:text-gray-200">Editar</span>
         </div>
         <FormRegistro
           modo="editar"

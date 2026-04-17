@@ -140,10 +140,10 @@ export default function Configuracoes({ user }: { user: User | null }) {
     : 'green'
 
   const statusCores = {
-    green: 'bg-green-50 border-green-200 text-green-800',
-    amber: 'bg-amber-50 border-amber-200 text-amber-800',
-    red:   'bg-red-50 border-red-200 text-red-800',
-    gray:  'bg-gray-50 border-gray-200 text-gray-600',
+    green: 'bg-green-50 dark:bg-green-950/40 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200',
+    amber: 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200',
+    red:   'bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200',
+    gray:  'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300',
   }
 
   const statusIcone = { green: '✅', amber: '⚠️', red: '🔴', gray: '⏳' }
@@ -155,19 +155,19 @@ export default function Configuracoes({ user }: { user: User | null }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f7f4] flex flex-col">
+    <div className="min-h-screen bg-[#f8f7f4] dark:bg-gray-950 flex flex-col">
       <Navbar userEmail={user?.email} />
       <main className="max-w-2xl mx-auto px-4 py-8 flex-1">
 
-        <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
-          <Link to="/" className="hover:text-gray-600 transition">Registros</Link>
+        <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 mb-6">
+          <Link to="/" className="hover:text-gray-600 dark:hover:text-gray-300 transition">Registros</Link>
           <span>/</span>
-          <span className="text-gray-700">Configurações</span>
+          <span className="text-gray-700 dark:text-gray-200">Configurações</span>
         </div>
 
         <div className="mb-6">
-          <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Configurações</h1>
-          <p className="text-sm text-gray-500 mt-1">Monitoramento e alertas do banco de dados</p>
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 tracking-tight">Configurações</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Monitoramento e alertas do banco de dados</p>
         </div>
 
         {/* Status atual do banco */}
@@ -182,17 +182,17 @@ export default function Configuracoes({ user }: { user: User | null }) {
         </div>
 
         {/* Configuração do e-mail */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 mb-6">
           <div className="flex items-start gap-3 mb-5">
-            <div className="w-9 h-9 rounded-lg bg-brand-50 flex items-center justify-center flex-shrink-0">
-              <svg className="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-9 h-9 rounded-lg bg-brand-50 dark:bg-brand-950/50 flex items-center justify-center flex-shrink-0">
+              <svg className="w-5 h-5 text-brand-600 dark:text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </div>
             <div>
-              <h2 className="text-base font-semibold text-gray-800">E-mail de alerta keep-alive</h2>
-              <p className="text-sm text-gray-500 mt-0.5">
+              <h2 className="text-base font-semibold text-gray-800 dark:text-gray-100">E-mail de alerta keep-alive</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
                 Receba uma notificação quando o banco ficar 5 dias sem atividade
               </p>
             </div>
@@ -200,7 +200,7 @@ export default function Configuracoes({ user }: { user: User | null }) {
 
           <div className="space-y-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                 Endereço de e-mail
               </label>
               <input
@@ -209,11 +209,11 @@ export default function Configuracoes({ user }: { user: User | null }) {
                 onChange={e => setEmail(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && salvarEmail()}
                 placeholder="seu@email.com"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 text-sm
                            focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-transparent
-                           transition placeholder:text-gray-400"
+                           transition placeholder:text-gray-400 dark:placeholder:text-gray-500"
               />
-              <p className="text-xs text-gray-400 mt-1.5">
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1.5">
                 O alerta é verificado diariamente. Se o banco ficar 5+ dias sem novos registros
                 ou edições, um e-mail de aviso será enviado para este endereço.
               </p>
@@ -222,8 +222,8 @@ export default function Configuracoes({ user }: { user: User | null }) {
             {msg && (
               <div className={`flex items-start gap-2 px-3 py-2.5 rounded-lg text-sm
                 ${msg.tipo === 'ok'
-                  ? 'bg-green-50 text-green-700 border border-green-200'
-                  : 'bg-red-50 text-red-600 border border-red-200'}`}>
+                  ? 'bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800'
+                  : 'bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-300 border border-red-200 dark:border-red-800'}`}>
                 <span>{msg.tipo === 'ok' ? '✓' : '✗'}</span>
                 <span>{msg.texto}</span>
               </div>
@@ -249,8 +249,8 @@ export default function Configuracoes({ user }: { user: User | null }) {
                 <button
                   onClick={testarAlerta}
                   disabled={testando}
-                  className="flex items-center gap-2 border border-gray-200 hover:bg-gray-50
-                             text-gray-600 font-medium px-4 py-2 rounded-lg text-sm transition
+                  className="flex items-center gap-2 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800
+                             text-gray-600 dark:text-gray-300 font-medium px-4 py-2 rounded-lg text-sm transition
                              disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {testando
@@ -267,8 +267,8 @@ export default function Configuracoes({ user }: { user: User | null }) {
         </div>
 
         {/* Como funciona */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
-          <h2 className="text-base font-semibold text-gray-800 mb-4">Como funciona</h2>
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 mb-6">
+          <h2 className="text-base font-semibold text-gray-800 dark:text-gray-100 mb-4">Como funciona</h2>
           <div className="space-y-3">
             {[
               { n: '1', t: 'Verificação diária automática', d: 'Uma função roda todo dia às 9h e verifica a data do último registro criado ou editado.' },
@@ -277,12 +277,12 @@ export default function Configuracoes({ user }: { user: User | null }) {
               { n: '4', t: 'Se o banco for pausado', d: 'Acesse supabase.com/dashboard e clique em "Restore project". A restauração leva cerca de 2 minutos.' },
             ].map(({ n, t, d }) => (
               <div key={n} className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-brand-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-xs font-bold text-brand-700">{n}</span>
+                <div className="w-6 h-6 rounded-full bg-brand-100 dark:bg-brand-900/50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-xs font-bold text-brand-700 dark:text-brand-300">{n}</span>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-800">{t}</p>
-                  <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{d}</p>
+                  <p className="text-sm font-medium text-gray-800 dark:text-gray-100">{t}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-relaxed">{d}</p>
                 </div>
               </div>
             ))}
@@ -290,10 +290,10 @@ export default function Configuracoes({ user }: { user: User | null }) {
         </div>
 
         {/* Log de verificações */}
-        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-          <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between">
-            <h2 className="text-base font-semibold text-gray-800">Histórico de verificações</h2>
-            <span className="text-xs text-gray-400">Últimas 10</span>
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-50 dark:border-gray-800 flex items-center justify-between">
+            <h2 className="text-base font-semibold text-gray-800 dark:text-gray-100">Histórico de verificações</h2>
+            <span className="text-xs text-gray-400 dark:text-gray-500">Últimas 10</span>
           </div>
 
           {loading ? (
@@ -301,21 +301,21 @@ export default function Configuracoes({ user }: { user: User | null }) {
               <div className="w-5 h-5 border-2 border-brand-600 border-t-transparent rounded-full animate-spin" />
             </div>
           ) : logs.length === 0 ? (
-            <div className="text-center py-10 text-gray-400">
+            <div className="text-center py-10 text-gray-400 dark:text-gray-500">
               <p className="text-sm">Nenhuma verificação executada ainda.</p>
               <p className="text-xs mt-1">Use o botão "Testar agora" para executar manualmente.</p>
             </div>
           ) : (
-            <div className="divide-y divide-gray-50">
+            <div className="divide-y divide-gray-50 dark:divide-gray-800">
               {logs.map(log => (
-                <div key={log.id} className="flex items-center justify-between px-5 py-3 hover:bg-gray-50 transition">
+                <div key={log.id} className="flex items-center justify-between px-5 py-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition">
                   <div className="flex items-center gap-3 min-w-0">
                     <span className="text-base flex-shrink-0">
                       {log.alerta_enviado ? '📧' : '✅'}
                     </span>
                     <div className="min-w-0">
-                      <p className="text-sm text-gray-700">{formatarData(log.verificado_em)}</p>
-                      <p className="text-xs text-gray-400 truncate">
+                      <p className="text-sm text-gray-700 dark:text-gray-200">{formatarData(log.verificado_em)}</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 truncate">
                         {log.dias_sem_movimento} {log.dias_sem_movimento === 1 ? 'dia' : 'dias'} sem atividade
                         {log.alerta_enviado && ` · alerta enviado para ${log.email_destino}`}
                       </p>
@@ -323,8 +323,8 @@ export default function Configuracoes({ user }: { user: User | null }) {
                   </div>
                   <span className={`text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0 ml-3
                     ${log.alerta_enviado
-                      ? 'bg-amber-100 text-amber-700'
-                      : 'bg-green-100 text-green-700'}`}>
+                      ? 'bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-200'
+                      : 'bg-green-100 dark:bg-green-950/50 text-green-700 dark:text-green-200'}`}>
                     {log.alerta_enviado ? 'Alerta enviado' : 'Normal'}
                   </span>
                 </div>
@@ -334,17 +334,17 @@ export default function Configuracoes({ user }: { user: User | null }) {
         </div>
 
         {/* Setup da Edge Function */}
-        <div className="mt-6 bg-gray-50 rounded-xl border border-gray-200 p-5">
-          <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-            <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="mt-6 bg-gray-50 dark:bg-gray-900/80 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
+          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3 flex items-center gap-2">
+            <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                 d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
             Configuração necessária (uma vez)
           </h3>
-          <p className="text-xs text-gray-500 mb-3 leading-relaxed">
-            Para os alertas funcionarem, siga os passos no arquivo <code className="bg-white px-1.5 py-0.5 rounded border border-gray-200 font-mono text-xs">KEEPALIVE_SETUP.md</code> incluído no projeto.
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 leading-relaxed">
+            Para os alertas funcionarem, siga os passos no arquivo <code className="bg-white dark:bg-gray-950 px-1.5 py-0.5 rounded border border-gray-200 dark:border-gray-700 font-mono text-xs">KEEPALIVE_SETUP.md</code> incluído no projeto.
           </p>
           <div className="space-y-1.5">
             {[
@@ -354,8 +354,8 @@ export default function Configuracoes({ user }: { user: User | null }) {
               'Ativar o cron diário via SQL no Supabase',
             ].map((passo, i) => (
               <div key={i} className="flex items-start gap-2">
-                <span className="text-xs font-bold text-gray-400 flex-shrink-0 mt-0.5">{i + 1}.</span>
-                <p className="text-xs text-gray-600">{passo}</p>
+                <span className="text-xs font-bold text-gray-400 dark:text-gray-500 flex-shrink-0 mt-0.5">{i + 1}.</span>
+                <p className="text-xs text-gray-600 dark:text-gray-300">{passo}</p>
               </div>
             ))}
           </div>

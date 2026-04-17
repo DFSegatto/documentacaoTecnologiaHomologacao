@@ -75,20 +75,20 @@ export default function Categorias({ user }: { user: User | null }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f7f4] flex flex-col">
+    <div className="min-h-screen bg-[#f8f7f4] dark:bg-gray-950 flex flex-col">
       <Navbar userEmail={user?.email} />
 
       <main className="max-w-2xl mx-auto px-4 py-8 flex-1">
-        <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
-          <Link to="/" className="hover:text-gray-600 transition">Registros</Link>
+        <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 mb-6">
+          <Link to="/" className="hover:text-gray-600 dark:hover:text-gray-300 transition">Registros</Link>
           <span>/</span>
-          <span className="text-gray-700">Categorias</span>
+          <span className="text-gray-700 dark:text-gray-200">Categorias</span>
         </div>
 
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Categorias</h1>
-            <p className="text-sm text-gray-500 mt-1">Crie e gerencie as categorias dos registros</p>
+            <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 tracking-tight">Categorias</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Crie e gerencie as categorias dos registros</p>
           </div>
           {!mostrarForm && (
             <button
@@ -104,14 +104,14 @@ export default function Categorias({ user }: { user: User | null }) {
         </div>
 
         {mostrarForm && (
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
-            <h2 className="text-base font-semibold text-gray-800 mb-4">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 mb-6">
+            <h2 className="text-base font-semibold text-gray-800 dark:text-gray-100 mb-4">
               {editando ? 'Editar categoria' : 'Nova categoria'}
             </h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Nome</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Nome</label>
                 <input
                   type="text"
                   value={novoNome}
@@ -119,12 +119,12 @@ export default function Categorias({ user }: { user: User | null }) {
                   onKeyDown={e => e.key === 'Enter' && salvar()}
                   placeholder="Ex: Treinamento, Integração..."
                   autoFocus
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-transparent transition placeholder:text-gray-400"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-transparent transition placeholder:text-gray-400 dark:placeholder:text-gray-500"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Cor</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cor</label>
                 <div className="flex flex-wrap gap-2">
                   {CORES_CATEGORIA.map(cor => (
                     <button
@@ -151,7 +151,7 @@ export default function Categorias({ user }: { user: User | null }) {
 
               <div className="flex items-center justify-between pt-2 border-t border-gray-100">
                 <button type="button" onClick={cancelar}
-                  className="text-sm text-gray-500 hover:text-gray-700 transition">
+                  className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition">
                   Cancelar
                 </button>
                 <button type="button" onClick={salvar} disabled={salvando}
@@ -168,7 +168,7 @@ export default function Categorias({ user }: { user: User | null }) {
           </div>
         )}
 
-        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
           {loading ? (
             <div className="flex items-center justify-center py-16">
               <div className="w-6 h-6 border-2 border-brand-600 border-t-transparent rounded-full animate-spin" />
@@ -191,7 +191,7 @@ export default function Categorias({ user }: { user: User | null }) {
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => iniciarEdicao(cat)}
-                      className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition"
+                      className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition"
                       title="Editar"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

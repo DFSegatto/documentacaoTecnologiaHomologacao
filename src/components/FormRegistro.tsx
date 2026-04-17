@@ -201,24 +201,24 @@ export default function FormRegistro({ inicial, modo }: Props) {
         <input type="text" value={titulo} onChange={e => setTitulo(e.target.value)}
           placeholder="Título do registro..."
           className="w-full text-2xl font-semibold bg-transparent border-none outline-none
-                     text-gray-900 placeholder:text-gray-300 py-1" />
-        <div className="h-px bg-gray-200 mt-2" />
+                     text-gray-900 dark:text-gray-100 placeholder:text-gray-300 dark:placeholder:text-gray-600 py-1" />
+        <div className="h-px bg-gray-200 dark:bg-gray-700 mt-2" />
       </div>
 
       {/* Toggle Privado */}
       <div className={`flex items-start gap-3 rounded-xl border px-4 py-3.5 transition cursor-pointer
-        ${privado ? 'bg-amber-50 border-amber-300' : 'bg-gray-50 border-gray-200 hover:border-gray-300'}`}
+        ${privado ? 'bg-amber-50 dark:bg-amber-950/30 border-amber-300 dark:border-amber-700' : 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'}`}
         onClick={() => setPrivado(v => !v)}>
         <div className={`relative w-10 h-6 rounded-full flex-shrink-0 transition mt-0.5
-          ${privado ? 'bg-amber-500' : 'bg-gray-300'}`}>
-          <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all
+          ${privado ? 'bg-amber-500' : 'bg-gray-300 dark:bg-gray-600'}`}>
+          <div className={`absolute top-1 w-4 h-4 bg-white dark:bg-gray-200 rounded-full shadow transition-all
             ${privado ? 'left-5' : 'left-1'}`} />
         </div>
         <div>
-          <p className={`text-sm font-semibold ${privado ? 'text-amber-800' : 'text-gray-700'}`}>
+          <p className={`text-sm font-semibold ${privado ? 'text-amber-800 dark:text-amber-200' : 'text-gray-700 dark:text-gray-300'}`}>
             {privado ? '🔒 Registro privado' : '🌐 Registro público'}
           </p>
-          <p className={`text-xs mt-0.5 ${privado ? 'text-amber-700' : 'text-gray-500'}`}>
+          <p className={`text-xs mt-0.5 ${privado ? 'text-amber-700 dark:text-amber-300/90' : 'text-gray-500 dark:text-gray-400'}`}>
             {privado
               ? 'Visível apenas para você. Ideal para credenciais e dados sensíveis.'
               : 'Visível para toda a equipe autenticada.'}
@@ -229,28 +229,28 @@ export default function FormRegistro({ inicial, modo }: Props) {
       {/* Sessão */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <label className="block text-sm font-medium text-gray-700">
-            Sessão <span className="text-gray-400 font-normal">(opcional)</span>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Sessão <span className="text-gray-400 dark:text-gray-500 font-normal">(opcional)</span>
           </label>
-          <a href="/sessoes" className="text-xs text-brand-600 hover:underline">+ Gerenciar sessões</a>
+          <a href="/sessoes" className="text-xs text-brand-600 dark:text-brand-400 hover:underline">+ Gerenciar sessões</a>
         </div>
         {sessoes.length === 0 ? (
-          <p className="text-sm text-gray-400 bg-gray-50 rounded-xl px-4 py-3">
+          <p className="text-sm text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-800/50 rounded-xl px-4 py-3">
             Nenhuma sessão.{' '}
-            <a href="/sessoes" className="text-brand-600 hover:underline font-medium">Criar agora</a>
+            <a href="/sessoes" className="text-brand-600 dark:text-brand-400 hover:underline font-medium">Criar agora</a>
           </p>
         ) : (
           <div className="flex flex-wrap gap-2 items-start">
             <button type="button" onClick={() => setSessaoId('')}
               className={`self-start px-3.5 py-1.5 rounded-lg text-sm font-medium transition border
-                ${!sessaoId ? 'bg-gray-800 text-white border-gray-800' : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'}`}>
+                ${!sessaoId ? 'bg-gray-800 dark:bg-gray-700 text-white border-gray-800 dark:border-gray-700' : 'bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'}`}>
               Sem sessão
             </button>
             {arvore.map(sessao => (
               <div key={sessao.id} className="flex flex-col gap-1.5">
                 <button type="button" onClick={() => setSessaoId(sessao.id)}
                   className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-sm font-medium transition border-2
-                    ${sessaoId === sessao.id ? 'text-white border-transparent' : 'bg-white border-transparent hover:border-gray-200'}`}
+                    ${sessaoId === sessao.id ? 'text-white border-transparent' : 'bg-white dark:bg-gray-900 border-transparent hover:border-gray-200 dark:hover:border-gray-600'}`}
                   style={sessaoId === sessao.id ? { backgroundColor: sessao.cor } : { color: sessao.cor, borderColor: sessao.cor + '44' }}>
                   <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -261,7 +261,7 @@ export default function FormRegistro({ inicial, modo }: Props) {
                 {sessao.filhas.map(filha => (
                   <button key={filha.id} type="button" onClick={() => setSessaoId(filha.id)}
                     className={`flex items-center gap-1 pl-5 pr-3 py-1 rounded-lg text-xs font-medium transition border-2
-                      ${sessaoId === filha.id ? 'text-white border-transparent' : 'bg-white border-transparent hover:border-gray-200'}`}
+                      ${sessaoId === filha.id ? 'text-white border-transparent' : 'bg-white dark:bg-gray-900 border-transparent hover:border-gray-200 dark:hover:border-gray-600'}`}
                     style={sessaoId === filha.id ? { backgroundColor: filha.cor } : { color: filha.cor, borderColor: filha.cor + '33' }}>
                     <span className="text-gray-300 mr-0.5" style={{ fontSize: 10 }}>└</span>
                     <svg className="w-3 h-3 flex-shrink-0 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -276,7 +276,7 @@ export default function FormRegistro({ inicial, modo }: Props) {
           </div>
         )}
         {sessaoSelecionada && (
-          <p className="text-xs text-gray-400 mt-2">
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
             Sessão: <strong style={{ color: sessaoSelecionada.cor }}>{sessaoSelecionada.nome}</strong>
           </p>
         )}
@@ -285,27 +285,27 @@ export default function FormRegistro({ inicial, modo }: Props) {
       {/* Categoria */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <label className="block text-sm font-medium text-gray-700">Categoria</label>
-          <a href="/categorias" className="text-xs text-brand-600 hover:underline">+ Gerenciar categorias</a>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Categoria</label>
+          <a href="/categorias" className="text-xs text-brand-600 dark:text-brand-400 hover:underline">+ Gerenciar categorias</a>
         </div>
         {categorias.length === 0 ? (
-          <p className="text-sm text-gray-400 bg-gray-50 rounded-xl px-4 py-3">
+          <p className="text-sm text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-800/50 rounded-xl px-4 py-3">
             Nenhuma categoria.{' '}
-            <a href="/categorias" className="text-brand-600 hover:underline font-medium">Criar agora</a>
+            <a href="/categorias" className="text-brand-600 dark:text-brand-400 hover:underline font-medium">Criar agora</a>
           </p>
         ) : (
           <div className="flex flex-wrap gap-2">
             {categorias.map(cat => (
               <button key={cat.id} type="button" onClick={() => setCategoriaId(cat.id)}
                 className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition border-2 ${cat.cor}
-                  ${categoriaId === cat.id ? 'border-gray-600 scale-105' : 'border-transparent'}`}>
+                  ${categoriaId === cat.id ? 'border-gray-600 dark:border-gray-400 scale-105' : 'border-transparent'}`}>
                 {cat.nome}
               </button>
             ))}
           </div>
         )}
         {categoriaSelecionada && (
-          <p className="text-xs text-gray-400 mt-2">
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
             Categoria: <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${categoriaSelecionada.cor}`}>
               {categoriaSelecionada.nome}
             </span>
@@ -314,26 +314,26 @@ export default function FormRegistro({ inicial, modo }: Props) {
       </div>
 
       {/* Bloco de Credenciais */}
-      <div className="border border-gray-200 rounded-2xl overflow-hidden">
+      <div className="border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden">
         {/* Header — toggle */}
         <button type="button" onClick={() => setComCredencial(v => !v)}
-          className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition">
+          className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition">
           <div className="flex items-center gap-3">
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0
-              ${comCredencial ? 'bg-gray-800' : 'bg-gray-100'}`}>
-              <svg className={`w-4 h-4 ${comCredencial ? 'text-green-400' : 'text-gray-400'}`}
+              ${comCredencial ? 'bg-gray-800 dark:bg-gray-700' : 'bg-gray-100 dark:bg-gray-800'}`}>
+              <svg className={`w-4 h-4 ${comCredencial ? 'text-green-400' : 'text-gray-400 dark:text-gray-500'}`}
                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
               </svg>
             </div>
             <div className="text-left">
-              <p className="text-sm font-medium text-gray-800">Credenciais de acesso</p>
-              <p className="text-xs text-gray-500">RDP, VPN, SSH, FTP — senhas criptografadas com AES-256</p>
+              <p className="text-sm font-medium text-gray-800 dark:text-gray-100">Credenciais de acesso</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">RDP, VPN, SSH, FTP — senhas criptografadas com AES-256</p>
             </div>
           </div>
           <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition
-            ${comCredencial ? 'bg-gray-800 border-gray-800' : 'border-gray-300'}`}>
+            ${comCredencial ? 'bg-gray-800 dark:bg-gray-700 border-gray-800 dark:border-gray-700' : 'border-gray-300 dark:border-gray-600'}`}>
             {comCredencial && (
               <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -344,7 +344,7 @@ export default function FormRegistro({ inicial, modo }: Props) {
 
         {/* Lista de credenciais */}
         {comCredencial && (
-          <div className="border-t border-gray-100 bg-gray-50/50">
+          <div className="border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50">
             <div className="p-4 space-y-3">
               {credenciais.map((cred, idx) => (
                 <FormCredencial
@@ -361,8 +361,8 @@ export default function FormRegistro({ inicial, modo }: Props) {
               {/* Botão adicionar */}
               <button type="button" onClick={adicionarCredencial}
                 className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2
-                           border-dashed border-gray-200 text-sm text-gray-500 hover:border-brand-300
-                           hover:text-brand-600 hover:bg-brand-50/30 transition">
+                           border-dashed border-gray-200 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-400 hover:border-brand-300
+                           dark:hover:border-brand-600 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-brand-50/30 dark:hover:bg-brand-950/20 transition">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
@@ -375,10 +375,10 @@ export default function FormRegistro({ inicial, modo }: Props) {
 
       {/* Conteúdo */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Conteúdo
           {privado && comCredencial && (
-            <span className="text-gray-400 font-normal ml-1">(opcional)</span>
+            <span className="text-gray-400 dark:text-gray-500 font-normal ml-1">(opcional)</span>
           )}
         </label>
         <Editor conteudo={conteudo} onChange={setConteudo} />
@@ -386,17 +386,17 @@ export default function FormRegistro({ inicial, modo }: Props) {
 
       {/* Anexos */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Anexos <span className="text-gray-400 font-normal">(imagens e PDFs)</span>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Anexos <span className="text-gray-400 dark:text-gray-500 font-normal">(imagens e PDFs)</span>
         </label>
         <UploadAnexos onUpload={setAnexos} arquivosExistentes={anexos} />
       </div>
 
-      {erro && <p className="text-sm text-red-600 bg-red-50 px-4 py-3 rounded-xl">{erro}</p>}
+      {erro && <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 px-4 py-3 rounded-xl">{erro}</p>}
 
-      <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+      <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-800">
         <button type="button" onClick={() => navigate(-1)}
-          className="text-sm text-gray-500 hover:text-gray-700 transition">
+          className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition">
           Cancelar
         </button>
         <button type="submit" disabled={salvando}

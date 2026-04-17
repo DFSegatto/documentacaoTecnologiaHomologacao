@@ -12,12 +12,13 @@ import Categorias      from './pages/Categorias'
 import Sessoes         from './pages/Sessoes'
 import Historico       from './pages/Historico'
 import RestaurarVersao from './pages/RestaurarVersao'
+import Configuracoes   from './pages/Configuracoes'
 
 type AuthState = 'loading' | 'authenticated' | 'unauthenticated'
 
 function Spinner() {
   return (
-    <div className="min-h-screen bg-[#f8f7f4] flex items-center justify-center">
+    <div className="min-h-screen bg-[#f8f7f4] dark:bg-gray-950 flex items-center justify-center">
       <div className="w-6 h-6 border-2 border-brand-600 border-t-transparent rounded-full animate-spin" />
     </div>
   )
@@ -64,6 +65,7 @@ export default function App() {
       <Route path="/registros/:id/restaurar/:versaoId" element={<P><RestaurarVersao user={user} /></P>} />
       <Route path="/categorias"                      element={<P><Categorias user={user} /></P>} />
       <Route path="/sessoes"                         element={<P><Sessoes user={user} /></P>} />
+      <Route path="/configuracoes"                   element={<P><Configuracoes user={user} /></P>} />
       <Route path="*"                                element={<Navigate to="/" replace />} />
     </Routes>
   )

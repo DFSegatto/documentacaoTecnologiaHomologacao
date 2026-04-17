@@ -1,6 +1,18 @@
 <!doctype html>
 <html lang="pt-BR">
   <head>
+    <script>
+      (function () {
+        try {
+          var k = 'bc-theme'
+          var s = localStorage.getItem(k)
+          var dark =
+            s === 'dark' ||
+            (!s && window.matchMedia('(prefers-color-scheme: dark)').matches)
+          if (dark) document.documentElement.classList.add('dark')
+        } catch (e) {}
+      })()
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Base de Conhecimento — Suporte</title>

@@ -12,7 +12,7 @@ interface EditorProps {
 
 function Toolbar({ editor }: { editor: TiptapEditor }) {
   const btn = (active: boolean) =>
-    `p-1.5 rounded-md text-sm transition ${active ? 'bg-brand-100 text-brand-700' : 'text-gray-500 hover:bg-gray-100'}`
+    `p-1.5 rounded-md text-sm transition ${active ? 'bg-brand-100 text-brand-700 dark:bg-brand-900/50 dark:text-brand-200' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`
 
   async function handleImageUpload() {
     const input = document.createElement('input')
@@ -37,7 +37,7 @@ function Toolbar({ editor }: { editor: TiptapEditor }) {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-0.5 px-3 py-2 border-b border-gray-100 bg-gray-50">
+    <div className="flex flex-wrap items-center gap-0.5 px-3 py-2 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80">
       <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className={btn(editor.isActive('bold'))} title="Negrito">
         <strong className="text-xs">B</strong>
       </button>
@@ -47,14 +47,14 @@ function Toolbar({ editor }: { editor: TiptapEditor }) {
       <button type="button" onClick={() => editor.chain().focus().toggleCode().run()} className={btn(editor.isActive('code'))} title="Código">
         <span className="text-xs font-mono">&lt;/&gt;</span>
       </button>
-      <div className="w-px h-5 bg-gray-200 mx-1" />
+      <div className="w-px h-5 bg-gray-200 dark:bg-gray-600 mx-1" />
       <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={btn(editor.isActive('heading', { level: 2 }))} title="Título">
         <span className="text-xs font-semibold">H2</span>
       </button>
       <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} className={btn(editor.isActive('heading', { level: 3 }))} title="Subtítulo">
         <span className="text-xs font-semibold">H3</span>
       </button>
-      <div className="w-px h-5 bg-gray-200 mx-1" />
+      <div className="w-px h-5 bg-gray-200 dark:bg-gray-600 mx-1" />
       <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} className={btn(editor.isActive('bulletList'))} title="Lista">
         <span className="text-xs">• —</span>
       </button>
@@ -64,14 +64,14 @@ function Toolbar({ editor }: { editor: TiptapEditor }) {
       <button type="button" onClick={() => editor.chain().focus().toggleBlockquote().run()} className={btn(editor.isActive('blockquote'))} title="Citação">
         <span className="text-xs">"</span>
       </button>
-      <div className="w-px h-5 bg-gray-200 mx-1" />
+      <div className="w-px h-5 bg-gray-200 dark:bg-gray-600 mx-1" />
       <button type="button" onClick={setLink} className={btn(editor.isActive('link'))} title="Link">
         <span className="text-xs">🔗</span>
       </button>
       <button type="button" onClick={handleImageUpload} className={btn(false)} title="Imagem">
         <span className="text-xs">🖼</span>
       </button>
-      <div className="w-px h-5 bg-gray-200 mx-1" />
+      <div className="w-px h-5 bg-gray-200 dark:bg-gray-600 mx-1" />
       <button type="button" onClick={() => editor.chain().focus().undo().run()} className={btn(false)} title="Desfazer">
         <span className="text-xs">↩</span>
       </button>
@@ -98,9 +98,9 @@ export default function Editor({ conteudo, onChange }: EditorProps) {
   if (!editor) return null
 
   return (
-    <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
+    <div className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden bg-white dark:bg-gray-900">
       <Toolbar editor={editor} />
-      <div className="px-5 py-4">
+      <div className="px-5 py-4 dark:bg-gray-900">
         <EditorContent editor={editor} />
       </div>
     </div>

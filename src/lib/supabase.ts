@@ -120,14 +120,14 @@ export const CORES_SESSAO = [
 ]
 
 export const CORES_CATEGORIA = [
-  { value: 'bg-red-100 text-red-700',       label: 'Vermelho' },
-  { value: 'bg-blue-100 text-blue-700',     label: 'Azul'     },
-  { value: 'bg-green-100 text-green-700',   label: 'Verde'    },
-  { value: 'bg-yellow-100 text-yellow-700', label: 'Amarelo'  },
-  { value: 'bg-purple-100 text-purple-700', label: 'Roxo'     },
-  { value: 'bg-pink-100 text-pink-700',     label: 'Rosa'     },
-  { value: 'bg-orange-100 text-orange-700', label: 'Laranja'  },
-  { value: 'bg-gray-100 text-gray-700',     label: 'Cinza'    },
+  { value: 'bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-200', label: 'Vermelho' },
+  { value: 'bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-200', label: 'Azul' },
+  { value: 'bg-green-100 text-green-700 dark:bg-green-950/60 dark:text-green-200', label: 'Verde' },
+  { value: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-950/50 dark:text-yellow-200', label: 'Amarelo' },
+  { value: 'bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-200', label: 'Roxo' },
+  { value: 'bg-pink-100 text-pink-700 dark:bg-pink-950/60 dark:text-pink-200', label: 'Rosa' },
+  { value: 'bg-orange-100 text-orange-700 dark:bg-orange-950/60 dark:text-orange-200', label: 'Laranja' },
+  { value: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-200', label: 'Cinza' },
 ]
 
 export const MAX_FILE_SIZE = 50 * 1024 * 1024

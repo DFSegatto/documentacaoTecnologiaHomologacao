@@ -102,20 +102,20 @@ export default function Sessoes({ user }: { user: User | null }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f7f4] flex flex-col">
+    <div className="min-h-screen bg-[#f8f7f4] dark:bg-gray-950 flex flex-col">
       <Navbar userEmail={user?.email} />
       <main className="max-w-2xl mx-auto px-4 py-8 flex-1">
 
-        <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
-          <Link to="/" className="hover:text-gray-600 transition">Registros</Link>
+        <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 mb-6">
+          <Link to="/" className="hover:text-gray-600 dark:hover:text-gray-300 transition">Registros</Link>
           <span>/</span>
-          <span className="text-gray-700">Sessões</span>
+          <span className="text-gray-700 dark:text-gray-200">Sessões</span>
         </div>
 
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Sessões</h1>
-            <p className="text-sm text-gray-500 mt-1">Organize registros em sessões e sub-sessões</p>
+            <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 tracking-tight">Sessões</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Organize registros em sessões e sub-sessões</p>
           </div>
           {!mostrarForm && (
             <button onClick={() => abrirFormNovo()}
@@ -130,8 +130,8 @@ export default function Sessoes({ user }: { user: User | null }) {
 
         {/* Formulário */}
         {mostrarForm && (
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
-            <h2 className="text-base font-semibold text-gray-800 mb-4">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 mb-6">
+            <h2 className="text-base font-semibold text-gray-800 dark:text-gray-100 mb-4">
               {editando
                 ? `Editar: ${editando.nome}`
                 : parentId
@@ -143,7 +143,7 @@ export default function Sessoes({ user }: { user: User | null }) {
             <div className="space-y-4">
               {/* Sessão pai */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                   Tipo
                 </label>
                 <div className="flex gap-2">
@@ -178,27 +178,27 @@ export default function Sessoes({ user }: { user: User | null }) {
 
               {/* Nome */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Nome</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Nome</label>
                 <input type="text" value={nome} onChange={e => setNome(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && salvar()}
                   placeholder={parentId ? 'Ex: Módulo de Férias, Versão 2.0...' : 'Ex: ERP, eDocs, Apontamento Web...'}
                   autoFocus
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-transparent transition placeholder:text-gray-400" />
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-transparent transition placeholder:text-gray-400 dark:placeholder:text-gray-500" />
               </div>
 
               {/* Descrição */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                   Descrição <span className="text-gray-400 font-normal">(opcional)</span>
                 </label>
                 <input type="text" value={descricao} onChange={e => setDescricao(e.target.value)}
                   placeholder="Descreva brevemente o conteúdo desta sessão"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-transparent transition placeholder:text-gray-400" />
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-transparent transition placeholder:text-gray-400 dark:placeholder:text-gray-500" />
               </div>
 
               {/* Cor */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Cor</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cor</label>
                 <div className="flex flex-wrap gap-2">
                   {CORES_SESSAO.map(c => (
                     <button key={c.value} type="button" onClick={() => setCor(c.value)}
@@ -227,7 +227,7 @@ export default function Sessoes({ user }: { user: User | null }) {
               {erro && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{erro}</p>}
 
               <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                <button type="button" onClick={cancelar} className="text-sm text-gray-500 hover:text-gray-700 transition">
+                <button type="button" onClick={cancelar} className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition">
                   Cancelar
                 </button>
                 <button type="button" onClick={salvar} disabled={salvando}
@@ -245,7 +245,7 @@ export default function Sessoes({ user }: { user: User | null }) {
         )}
 
         {/* Lista em árvore */}
-        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
           {loading ? (
             <div className="flex items-center justify-center py-16">
               <div className="w-6 h-6 border-2 border-brand-600 border-t-transparent rounded-full animate-spin" />
@@ -272,7 +272,7 @@ export default function Sessoes({ user }: { user: User | null }) {
                         </svg>
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-gray-900 truncate">{sessao.nome}</p>
+                        <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">{sessao.nome}</p>
                         {sessao.descricao && <p className="text-xs text-gray-400 truncate">{sessao.descricao}</p>}
                       </div>
                       <span className="text-xs text-gray-400 flex-shrink-0 ml-1">
@@ -288,7 +288,7 @@ export default function Sessoes({ user }: { user: User | null }) {
                         <span className="hidden sm:inline text-xs">Sub-sessão</span>
                       </button>
                       <button onClick={() => iniciarEdicao(sessao)} title="Editar"
-                        className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition">
+                        className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -311,7 +311,7 @@ export default function Sessoes({ user }: { user: User | null }) {
                   {/* Sub-sessões */}
                   {sessao.filhas.map((filha, idx) => (
                     <div key={filha.id}
-                      className="flex items-center justify-between pl-14 pr-5 py-3 bg-gray-50/60 hover:bg-gray-100/60 transition group border-t border-gray-100/80">
+                      className="flex items-center justify-between pl-14 pr-5 py-3 bg-gray-50/60 dark:bg-gray-800/40 hover:bg-gray-100/60 dark:hover:bg-gray-800/80 transition group border-t border-gray-100/80 dark:border-gray-800/80">
                       <div className="flex items-center gap-2.5 min-w-0">
                         {/* Conector visual */}
                         <div className="flex-shrink-0 flex items-center">
@@ -329,7 +329,7 @@ export default function Sessoes({ user }: { user: User | null }) {
                           </svg>
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-medium text-gray-700 truncate">{filha.nome}</p>
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-200 truncate">{filha.nome}</p>
                           {filha.descricao && <p className="text-xs text-gray-400 truncate">{filha.descricao}</p>}
                         </div>
                         <span className="text-xs text-gray-400 flex-shrink-0 ml-1">
@@ -338,7 +338,7 @@ export default function Sessoes({ user }: { user: User | null }) {
                       </div>
                       <div className="flex items-center gap-1 flex-shrink-0 ml-3 opacity-0 group-hover:opacity-100 transition">
                         <button onClick={() => iniciarEdicao(filha)} title="Editar"
-                          className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-white rounded-lg transition">
+                          className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-white dark:hover:bg-gray-800 rounded-lg transition">
                           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                               d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />

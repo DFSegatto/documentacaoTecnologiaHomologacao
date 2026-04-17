@@ -146,7 +146,7 @@ export default function Home({ user }: { user: User | null }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f7f4]">
+    <div className="min-h-screen bg-[#f8f7f4] dark:bg-gray-950">
       <Navbar userEmail={user?.email} />
       <main className="max-w-6xl mx-auto px-4 py-8">
 
@@ -154,8 +154,8 @@ export default function Home({ user }: { user: User | null }) {
 
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Registros</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 tracking-tight">Registros</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             {total} {total === 1 ? 'registro' : 'registros'}
             {busca && <> para <strong>"{busca}"</strong></>}
           </p>
@@ -165,11 +165,11 @@ export default function Home({ user }: { user: User | null }) {
           {/* ── Sidebar ─────────────────────────────────────────────── */}
           <aside className="w-56 flex-shrink-0 space-y-5">
             <div>
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide px-1 mb-1.5">Sessões</p>
+              <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide px-1 mb-1.5">Sessões</p>
               <div className="space-y-0.5">
                 <button onClick={() => setParam('sessao', '')}
                   className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition
-                    ${!sessaoFiltro ? 'bg-brand-600 text-white font-medium' : 'text-gray-600 hover:bg-white'}`}>
+                    ${!sessaoFiltro ? 'bg-brand-600 text-white font-medium' : 'text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800'}`}>
                   <span>Todas</span>
                   <span className={`text-xs ${!sessaoFiltro ? 'text-brand-200' : 'text-gray-400'}`}>{totalSessoes}</span>
                 </button>
@@ -183,7 +183,7 @@ export default function Home({ user }: { user: User | null }) {
                     <div key={sessao.id}>
                       <button onClick={() => setParam('sessao', sessao.id)}
                         className={`w-full flex items-center gap-2 justify-between px-3 py-2 rounded-lg text-sm transition
-                          ${ativa ? 'font-medium text-white' : filhaAtiva ? 'text-gray-800 bg-gray-100' : 'text-gray-600 hover:bg-white'}`}
+                          ${ativa ? 'font-medium text-white' : filhaAtiva ? 'text-gray-800 dark:text-gray-100 bg-gray-100 dark:bg-gray-800' : 'text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800'}`}
                         style={ativa ? { backgroundColor: sessao.cor } : {}}>
                         <span className="flex items-center gap-1.5 min-w-0">
                           <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"
@@ -200,7 +200,7 @@ export default function Home({ user }: { user: User | null }) {
                         return (
                           <button key={filha.id} onClick={() => setParam('sessao', filha.id)}
                             className={`w-full flex items-center gap-1.5 justify-between pl-6 pr-3 py-1.5 rounded-lg text-xs transition
-                              ${filhaAtv ? 'font-medium text-white' : 'text-gray-500 hover:bg-white hover:text-gray-700'}`}
+                              ${filhaAtv ? 'font-medium text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-white dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200'}`}
                             style={filhaAtv ? { backgroundColor: filha.cor } : {}}>
                             <span className="flex items-center gap-1.5 min-w-0">
                               <span className="flex-shrink-0 text-gray-300" style={{ fontSize: 10 }}>
@@ -225,7 +225,7 @@ export default function Home({ user }: { user: User | null }) {
 
                 <button onClick={() => setParam('sessao', 'sem-sessao')}
                   className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition
-                    ${sessaoFiltro === 'sem-sessao' ? 'bg-gray-700 text-white font-medium' : 'text-gray-400 hover:bg-white hover:text-gray-600'}`}>
+                    ${sessaoFiltro === 'sem-sessao' ? 'bg-gray-700 dark:bg-gray-600 text-white font-medium' : 'text-gray-400 dark:text-gray-500 hover:bg-white dark:hover:bg-gray-800 hover:text-gray-600 dark:hover:text-gray-300'}`}>
                   <span>Sem sessão</span>
                   <span className={`text-xs ${sessaoFiltro === 'sem-sessao' ? 'text-gray-300' : 'text-gray-300'}`}>
                     {contagensSessao['sem-sessao'] ?? 0}
@@ -237,11 +237,11 @@ export default function Home({ user }: { user: User | null }) {
             {/* Categorias */}
             {categoriasVis.length > 0 && (
               <div>
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide px-1 mb-1.5">Categorias</p>
+                <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide px-1 mb-1.5">Categorias</p>
                 <div className="space-y-0.5">
                   {categoriaFiltro && (
                     <button onClick={() => setParam('categoria', '')}
-                      className="w-full text-left px-3 py-1.5 text-xs text-gray-400 hover:text-gray-600 transition">
+                      className="w-full text-left px-3 py-1.5 text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition">
                       ← Todas as categorias
                     </button>
                   )}
@@ -249,7 +249,7 @@ export default function Home({ user }: { user: User | null }) {
                     <button key={cat.id}
                       onClick={() => setParam('categoria', categoriaFiltro === cat.id ? '' : cat.id)}
                       className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition
-                        ${categoriaFiltro === cat.id ? 'bg-gray-100 font-medium' : 'text-gray-600 hover:bg-white'}`}>
+                        ${categoriaFiltro === cat.id ? 'bg-gray-100 dark:bg-gray-800 font-medium' : 'text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800'}`}>
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${cat.cor}`}>
                         {cat.nome}
                       </span>
@@ -261,7 +261,7 @@ export default function Home({ user }: { user: User | null }) {
             )}
 
             {todasSessoes.length === 0 && (
-              <Link to="/sessoes" className="block px-3 py-2 text-xs text-brand-600 hover:underline">
+              <Link to="/sessoes" className="block px-3 py-2 text-xs text-brand-600 dark:text-brand-400 hover:underline">
                 + Criar sessões
               </Link>
             )}
@@ -274,9 +274,9 @@ export default function Home({ user }: { user: User | null }) {
             <div className="mb-4">
               <input type="search" value={busca} onChange={e => setParam('q', e.target.value)}
                 placeholder="Busca por título ou conteúdo..."
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-sm
                            focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-transparent
-                           placeholder:text-gray-400 transition" />
+                           placeholder:text-gray-400 dark:placeholder:text-gray-500 transition" />
             </div>
 
             {/* Cards */}
@@ -288,8 +288,8 @@ export default function Home({ user }: { user: User | null }) {
               <>
                 {registros.map(r => (
                   <Link key={r.id} to={`/registros/${r.id}`}
-                    className="block bg-white rounded-xl border border-gray-100 p-5
-                               hover:border-brand-200 hover:shadow-sm transition group">
+                    className="block bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-5
+                               hover:border-brand-200 dark:hover:border-brand-700 hover:shadow-sm transition group">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1.5 flex-wrap">
@@ -304,10 +304,10 @@ export default function Home({ user }: { user: User | null }) {
                             </span>
                           )}
                           {r.categoria && <CategoriaBadge categoria={r.categoria} />}
-                          <span className="text-xs text-gray-400">{formatarData(r.criado_em)}</span>
+                          <span className="text-xs text-gray-400 dark:text-gray-500">{formatarData(r.criado_em)}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                        <h2 className="font-semibold text-gray-900 group-hover:text-brand-600 transition truncate">
+                        <h2 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition truncate">
                           {r.titulo}
                         </h2>
                         {(r as any).privado && (
@@ -319,7 +319,7 @@ export default function Home({ user }: { user: User | null }) {
                       </div>
                         {busca && !r.titulo.toLowerCase().includes(busca.toLowerCase()) &&
                           r.conteudo.toLowerCase().includes(busca.toLowerCase()) && (
-                          <span className="inline-flex items-center gap-1 text-xs text-amber-600 mt-0.5">
+                          <span className="inline-flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400 mt-0.5">
                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -328,12 +328,12 @@ export default function Home({ user }: { user: User | null }) {
                           </span>
                         )}
                         {r.conteudo && (
-                          <p className="text-sm text-gray-500 mt-1 line-clamp-2 leading-relaxed">
+                          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2 leading-relaxed">
                             {resumo(r.conteudo, busca)}
                           </p>
                         )}
                       </div>
-                      <svg className="w-4 h-4 text-gray-300 group-hover:text-brand-400 transition flex-shrink-0 mt-1"
+                      <svg className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-brand-400 transition flex-shrink-0 mt-1"
                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
@@ -343,9 +343,9 @@ export default function Home({ user }: { user: User | null }) {
 
                 {/* ── Paginação ─────────────────────────────────────── */}
                 {totalPaginas > 1 && (
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-800">
                     {/* Info */}
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-gray-400 dark:text-gray-500">
                       {((pagina - 1) * POR_PAGINA) + 1}–{Math.min(pagina * POR_PAGINA, total)} de {total}
                     </p>
 
@@ -355,8 +355,8 @@ export default function Home({ user }: { user: User | null }) {
                       <button
                         onClick={() => irParaPagina(pagina - 1)}
                         disabled={pagina === 1}
-                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-sm text-gray-500
-                                   hover:bg-white hover:text-gray-800 transition disabled:opacity-30
+                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-sm text-gray-500 dark:text-gray-400
+                                   hover:bg-white dark:hover:bg-gray-800 hover:text-gray-800 dark:hover:text-gray-100 transition disabled:opacity-30
                                    disabled:cursor-not-allowed"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -369,7 +369,7 @@ export default function Home({ user }: { user: User | null }) {
                       <div className="flex items-center gap-0.5">
                         {paginasVisiveis().map((p, i) =>
                           p === '...' ? (
-                            <span key={`ellipsis-${i}`} className="w-8 text-center text-xs text-gray-400 select-none">
+                            <span key={`ellipsis-${i}`} className="w-8 text-center text-xs text-gray-400 dark:text-gray-500 select-none">
                               …
                             </span>
                           ) : (
@@ -379,7 +379,7 @@ export default function Home({ user }: { user: User | null }) {
                               className={`w-8 h-8 rounded-lg text-sm transition font-medium
                                 ${pagina === p
                                   ? 'bg-brand-600 text-white'
-                                  : 'text-gray-500 hover:bg-white hover:text-gray-800'}`}
+                                  : 'text-gray-500 dark:text-gray-400 hover:bg-white dark:hover:bg-gray-800 hover:text-gray-800 dark:hover:text-gray-100'}`}
                             >
                               {p}
                             </button>
@@ -391,8 +391,8 @@ export default function Home({ user }: { user: User | null }) {
                       <button
                         onClick={() => irParaPagina(pagina + 1)}
                         disabled={pagina === totalPaginas}
-                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-sm text-gray-500
-                                   hover:bg-white hover:text-gray-800 transition disabled:opacity-30
+                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-sm text-gray-500 dark:text-gray-400
+                                   hover:bg-white dark:hover:bg-gray-800 hover:text-gray-800 dark:hover:text-gray-100 transition disabled:opacity-30
                                    disabled:cursor-not-allowed"
                       >
                         <span className="hidden sm:inline">Próxima</span>
@@ -405,12 +405,12 @@ export default function Home({ user }: { user: User | null }) {
                 )}
               </>
             ) : (
-              <div className="text-center py-20 text-gray-400">
+              <div className="text-center py-20 text-gray-400 dark:text-gray-500">
                 <div className="text-5xl mb-3">🗂</div>
-                <p className="font-medium text-gray-600">Nenhum registro encontrado</p>
+                <p className="font-medium text-gray-600 dark:text-gray-300">Nenhum registro encontrado</p>
                 <p className="text-sm mt-1">
                   {sessaoFiltro
-                    ? <Link to={`/registros/novo?sessao=${sessaoFiltro}`} className="text-brand-600 hover:underline">
+                    ? <Link to={`/registros/novo?sessao=${sessaoFiltro}`} className="text-brand-600 dark:text-brand-400 hover:underline">
                         Criar registro nesta sessão
                       </Link>
                     : 'Crie o primeiro usando o botão "Novo registro"'

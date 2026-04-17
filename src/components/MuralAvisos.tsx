@@ -14,10 +14,10 @@ interface Aviso {
 }
 
 const CONFIGS: Record<TipoAviso, { cor: string; bg: string; borda: string; icone: string; label: string }> = {
-  novidade:  { cor: 'text-brand-700',  bg: 'bg-brand-50',  borda: 'border-brand-200', icone: '✨', label: 'Novidade'  },
-  melhoria:  { cor: 'text-teal-700',   bg: 'bg-teal-50',   borda: 'border-teal-200',  icone: '⚡', label: 'Melhoria'  },
-  correcao:  { cor: 'text-green-700',  bg: 'bg-green-50',  borda: 'border-green-200', icone: '🔧', label: 'Correção'  },
-  aviso:     { cor: 'text-amber-700',  bg: 'bg-amber-50',  borda: 'border-amber-200', icone: '⚠️', label: 'Aviso'     },
+  novidade:  { cor: 'text-brand-700 dark:text-brand-300',  bg: 'bg-brand-50 dark:bg-brand-950/40',  borda: 'border-brand-200 dark:border-brand-800', icone: '✨', label: 'Novidade'  },
+  melhoria:  { cor: 'text-teal-700 dark:text-teal-300',   bg: 'bg-teal-50 dark:bg-teal-950/40',   borda: 'border-teal-200 dark:border-teal-800',  icone: '⚡', label: 'Melhoria'  },
+  correcao:  { cor: 'text-green-700 dark:text-green-300',  bg: 'bg-green-50 dark:bg-green-950/40',  borda: 'border-green-200 dark:border-green-800', icone: '🔧', label: 'Correção'  },
+  aviso:     { cor: 'text-amber-700 dark:text-amber-300',  bg: 'bg-amber-50 dark:bg-amber-950/40',  borda: 'border-amber-200 dark:border-amber-800', icone: '⚠️', label: 'Aviso'     },
 }
 
 export default function MuralAvisos() {
@@ -72,17 +72,17 @@ export default function MuralAvisos() {
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-brand-500 animate-pulse" />
-          <h2 className="text-sm font-semibold text-gray-700">
+          <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-200">
             Novidades do sistema
           </h2>
-          <span className="text-xs font-medium px-1.5 py-0.5 bg-brand-100 text-brand-700 rounded-full">
+          <span className="text-xs font-medium px-1.5 py-0.5 bg-brand-100 dark:bg-brand-900/50 text-brand-700 dark:text-brand-200 rounded-full">
             {visiveis.length}
           </span>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setAberto(v => !v)}
-            className="text-xs text-gray-400 hover:text-gray-600 transition flex items-center gap-1"
+            className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition flex items-center gap-1"
           >
             {aberto ? 'Recolher' : 'Expandir'}
             <svg className={`w-3.5 h-3.5 transition-transform ${aberto ? '' : '-rotate-90'}`}
@@ -92,7 +92,7 @@ export default function MuralAvisos() {
           </button>
           <button
             onClick={dispensarTodos}
-            className="text-xs text-gray-400 hover:text-gray-600 transition"
+            className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition"
             title="Marcar todos como lidos"
           >
             Dispensar todos
@@ -118,22 +118,22 @@ export default function MuralAvisos() {
                       {cfg.label}
                     </span>
                     {aviso.versao && (
-                      <span className="text-xs font-mono text-gray-400 bg-white/70 px-1.5 py-0.5 rounded border border-gray-200">
+                      <span className="text-xs font-mono text-gray-400 dark:text-gray-500 bg-white/70 dark:bg-gray-900/80 px-1.5 py-0.5 rounded border border-gray-200 dark:border-gray-700">
                         v{aviso.versao}
                       </span>
                     )}
-                    <span className="text-xs text-gray-400">{formatarData(aviso.publicado_em)}</span>
+                    <span className="text-xs text-gray-400 dark:text-gray-500">{formatarData(aviso.publicado_em)}</span>
                   </div>
                   <p className={`text-sm font-semibold ${cfg.cor}`}>{aviso.titulo}</p>
                   {aviso.descricao && (
-                    <p className="text-xs text-gray-600 mt-0.5 leading-relaxed">{aviso.descricao}</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5 leading-relaxed">{aviso.descricao}</p>
                   )}
                 </div>
 
                 {/* Fechar */}
                 <button
                   onClick={() => dispensar(aviso.id)}
-                  className="text-gray-400 hover:text-gray-600 transition flex-shrink-0 mt-0.5"
+                  className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition flex-shrink-0 mt-0.5"
                   title="Marcar como lido"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
