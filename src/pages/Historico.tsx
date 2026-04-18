@@ -40,14 +40,14 @@ export default function Historico({ user }: { user: User | null }) {
   useEffect(() => {
     if (!id) return
     async function carregar() {
-      const { data: reg } = await supabase
-        .from('registros').select('id, titulo').eq('id', id).single()
-
-      const { data: hist } = await supabase
-        .from('registro_historico')
-        .select('*')
-        .eq('registro_id', id)
-        .order('editado_em', { ascending: false })
+      const [{ data: reg }, { data: hist }] = await Promise.all([
+        supabase.from('registros').select('id, titulo').eq('id', id).single(),
+        supabase
+          .from('registro_historico')
+          .select('*')
+          .eq('registro_id', id)
+          .order('editado_em', { ascending: false }),
+      ])
 
       setRegistro(reg as RegistroInfo)
       setHistorico((hist ?? []) as HistoricoRegistro[])

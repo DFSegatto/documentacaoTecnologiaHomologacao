@@ -10,7 +10,9 @@ import MuralAvisos from '../components/MuralAvisos'
 interface RegistroLista {
   id: string
   titulo: string
-  conteudo: string
+  /** Só vem do banco quando há busca por texto — lista padrão não carrega HTML completo. */
+  conteudo?: string
+  privado?: boolean
   criado_em: string
   sessao: Sessao | null
   categoria: CategoriaDB | null
@@ -34,21 +36,38 @@ export default function Home({ user }: { user: User | null }) {
   const categoriaFiltro = searchParams.get('categoria') ?? ''
   const busca           = searchParams.get('q')         ?? ''
 
-  // Carrega sessões e categorias uma única vez
+  // Carrega sessões e categorias uma única vez (em paralelo)
   useEffect(() => {
-    supabase.from('sessoes').select('*').order('nome').then(({ data }) => {
-      const lista = (data ?? []) as Sessao[]
+    void Promise.all([
+      supabase.from('sessoes').select('*').order('nome'),
+      supabase.from('categorias').select('*').order('nome'),
+    ]).then(([sessRes, catRes]) => {
+      const lista = (sessRes.data ?? []) as Sessao[]
       setTodasSessoes(lista)
       setArvore(agruparSessoes(lista))
+      setCategorias((catRes.data ?? []) as CategoriaDB[])
     })
-    supabase.from('categorias').select('*').order('nome').then(({ data }) =>
-      setCategorias((data ?? []) as CategoriaDB[])
-    )
   }, [])
 
-  // Carrega contagens totais por sessão/categoria (sem paginação — só IDs)
+  // Contagens por sessão/categoria: RPC agregada no Postgres (rápida); fallback se a função ainda não existir no projeto.
   useEffect(() => {
-    supabase.from('registros').select('sessao_id, categoria_id').then(({ data }) => {
+    async function carregarContagens() {
+      const { data: rpcData, error } = await supabase.rpc('contagens_sidebar_registros')
+      if (!error && rpcData && typeof rpcData === 'object' && 'sessoes' in rpcData) {
+        const raw = rpcData as { sessoes?: Record<string, unknown>; categorias?: Record<string, unknown> }
+        const mapS: Record<string, number> = {}
+        const mapC: Record<string, number> = {}
+        Object.entries(raw.sessoes ?? {}).forEach(([k, v]) => {
+          mapS[k] = typeof v === 'number' ? v : Number(v)
+        })
+        Object.entries(raw.categorias ?? {}).forEach(([k, v]) => {
+          mapC[k] = typeof v === 'number' ? v : Number(v)
+        })
+        setContagensSessao(mapS)
+        setContagensCategoria(mapC)
+        return
+      }
+      const { data } = await supabase.from('registros').select('sessao_id, categoria_id')
       const mapS: Record<string, number> = {}
       const mapC: Record<string, number> = {}
       data?.forEach(r => {
@@ -58,7 +77,8 @@ export default function Home({ user }: { user: User | null }) {
       })
       setContagensSessao(mapS)
       setContagensCategoria(mapC)
-    })
+    }
+    void carregarContagens()
   }, [])
 
   // Carrega página atual — reseta para página 1 quando filtros mudam
@@ -68,12 +88,13 @@ export default function Home({ user }: { user: User | null }) {
     const from = (pag - 1) * POR_PAGINA
     const to   = from + POR_PAGINA - 1
 
+    const colunasLista =
+      'id, titulo, criado_em, privado, sessao:sessoes(id,nome,cor,parent_id), categoria:categorias(id,nome,cor)' +
+      (busca ? ', conteudo' : '')
+
     let query = supabase
       .from('registros')
-      .select(
-        'id, titulo, conteudo, criado_em, sessao:sessoes(id,nome,cor,descricao,criado_em), categoria:categorias(id,nome,cor,criado_em)',
-        { count: 'exact' }
-      )
+      .select(colunasLista, { count: 'exact' })
       .order('criado_em', { ascending: false })
       .range(from, to)
 
@@ -310,7 +331,7 @@ export default function Home({ user }: { user: User | null }) {
                         <h2 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition truncate">
                           {r.titulo}
                         </h2>
-                        {(r as any).privado && (
+                        {r.privado && (
                           <svg className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                               d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -318,7 +339,7 @@ export default function Home({ user }: { user: User | null }) {
                         )}
                       </div>
                         {busca && !r.titulo.toLowerCase().includes(busca.toLowerCase()) &&
-                          r.conteudo.toLowerCase().includes(busca.toLowerCase()) && (
+                          (r.conteudo ?? '').toLowerCase().includes(busca.toLowerCase()) && (
                           <span className="inline-flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400 mt-0.5">
                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -327,11 +348,9 @@ export default function Home({ user }: { user: User | null }) {
                             Encontrado no conteúdo
                           </span>
                         )}
-                        {r.conteudo && (
-                          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2 leading-relaxed">
-                            {resumo(r.conteudo, busca)}
-                          </p>
-                        )}
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2 leading-relaxed">
+                          {r.conteudo ? resumo(r.conteudo, busca) : resumo(r.titulo, busca)}
+                        </p>
                       </div>
                       <svg className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-brand-400 transition flex-shrink-0 mt-1"
                         fill="none" stroke="currentColor" viewBox="0 0 24 24">

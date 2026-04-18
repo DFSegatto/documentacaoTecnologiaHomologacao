@@ -49,14 +49,10 @@ export default function VerRegistro({ user }: { user: User | null }) {
         return
       }
 
-      const { data: anx } = await supabase
-        .from('anexos').select('*').eq('registro_id', id).order('criado_em')
-
-      const { data: creds } = await supabase
-        .from('credenciais')
-        .select('*')
-        .eq('registro_id', id)
-        .order('ordem', { ascending: true })
+      const [{ data: anx }, { data: creds }] = await Promise.all([
+        supabase.from('anexos').select('*').eq('registro_id', id).order('criado_em'),
+        supabase.from('credenciais').select('*').eq('registro_id', id).order('ordem', { ascending: true }),
+      ])
 
       setRegistro(reg as unknown as RegistroCompleto)
       setAnexos((anx ?? []) as Anexo[])

@@ -352,6 +352,45 @@ create policy "leitura de anexos com privacidade"
     )
   );
 
+-- Agregação na sidebar (Home) sem transferir todas as linhas de registros — RLS aplica-se à tabela.
+create or replace function public.contagens_sidebar_registros()
+returns jsonb
+language sql
+stable
+security invoker
+set search_path = public
+as $fn$
+  select jsonb_build_object(
+    'sessoes',
+    coalesce(
+      (
+        select jsonb_object_agg(k, to_jsonb(cnt))
+        from (
+          select coalesce(sessao_id::text, 'sem-sessao') as k, count(*)::int as cnt
+          from registros
+          group by sessao_id
+        ) s
+      ),
+      '{}'::jsonb
+    ),
+    'categorias',
+    coalesce(
+      (
+        select jsonb_object_agg(categoria_id::text, to_jsonb(cnt))
+        from (
+          select categoria_id, count(*)::int as cnt
+          from registros
+          where categoria_id is not null
+          group by categoria_id
+        ) c
+      ),
+      '{}'::jsonb
+    )
+  );
+$fn$;
+
+grant execute on function public.contagens_sidebar_registros() to authenticated;
+
 
 -- ============================================================
 -- ATUALIZAÇÃO: Mural de avisos

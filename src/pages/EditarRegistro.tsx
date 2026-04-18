@@ -34,18 +34,10 @@ export default function EditarRegistro({ user }: { user: User | null }) {
         .eq('id', id)
         .single()
 
-      // Busca anexos
-      const { data: anx } = await supabase
-        .from('anexos')
-        .select('nome, url, tipo, tamanho')
-        .eq('registro_id', id)
-
-      // Busca credenciais existentes
-      const { data: creds } = await supabase
-        .from('credenciais')
-        .select('*')
-        .eq('registro_id', id)
-        .order('ordem', { ascending: true })
+      const [{ data: anx }, { data: creds }] = await Promise.all([
+        supabase.from('anexos').select('nome, url, tipo, tamanho').eq('registro_id', id),
+        supabase.from('credenciais').select('*').eq('registro_id', id).order('ordem', { ascending: true }),
+      ])
 
       setRegistro(reg as RegistroRaw)
       setAnexos((anx ?? []) as ArquivoUpload[])
