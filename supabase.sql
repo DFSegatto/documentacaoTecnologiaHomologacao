@@ -260,7 +260,7 @@ create table if not exists credenciais (
 
 create index if not exists credenciais_registro_idx on credenciais(registro_id);
 
--- 3. RLS para credenciais — só o criador do registro acessa
+-- 3. RLS para credenciais — público: qualquer autenticado; privado: só o criador do registro
 alter table credenciais enable row level security;
 
 create policy "dono le credenciais"
@@ -270,7 +270,7 @@ create policy "dono le credenciais"
     exists (
       select 1 from registros r
       where r.id = credenciais.registro_id
-        and r.criado_por = auth.uid()
+        and (r.privado = false or r.criado_por = auth.uid())
     )
   );
 
@@ -281,7 +281,7 @@ create policy "dono cria credenciais"
     exists (
       select 1 from registros r
       where r.id = credenciais.registro_id
-        and r.criado_por = auth.uid()
+        and (r.privado = false or r.criado_por = auth.uid())
     )
   );
 
@@ -292,7 +292,7 @@ create policy "dono atualiza credenciais"
     exists (
       select 1 from registros r
       where r.id = credenciais.registro_id
-        and r.criado_por = auth.uid()
+        and (r.privado = false or r.criado_por = auth.uid())
     )
   );
 
@@ -303,7 +303,7 @@ create policy "dono exclui credenciais"
     exists (
       select 1 from registros r
       where r.id = credenciais.registro_id
-        and r.criado_por = auth.uid()
+        and (r.privado = false or r.criado_por = auth.uid())
     )
   );
 
@@ -440,10 +440,10 @@ create table if not exists credenciais (
 alter table credenciais enable row level security;
 
 create policy "dono le credenciais" on credenciais for select to authenticated
-  using (exists (select 1 from registros r where r.id = credenciais.registro_id and r.criado_por = auth.uid()));
+  using (exists (select 1 from registros r where r.id = credenciais.registro_id and (r.privado = false or r.criado_por = auth.uid())));
 
 create policy "dono cria credenciais" on credenciais for insert to authenticated
-  with check (exists (select 1 from registros r where r.id = credenciais.registro_id and r.criado_por = auth.uid()));
+  with check (exists (select 1 from registros r where r.id = credenciais.registro_id and (r.privado = false or r.criado_por = auth.uid())));
 
 create policy "dono exclui credenciais" on credenciais for delete to authenticated
-  using (exists (select 1 from registros r where r.id = credenciais.registro_id and r.criado_por = auth.uid()));
+  using (exists (select 1 from registros r where r.id = credenciais.registro_id and (r.privado = false or r.criado_por = auth.uid())));
