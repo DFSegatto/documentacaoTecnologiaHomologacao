@@ -159,7 +159,7 @@ export default function VerRegistro({ user }: { user: User | null }) {
                 {registro.categoria && <CategoriaBadge categoria={registro.categoria} />}
               </div>
 
-              {/* Ações: público → histórico/editar para todos; privado → só o criador. Excluir: só o criador. */}
+              {/* Ações: público → histórico/editar/excluir para todos; privado → só o criador. */}
               {podeEditar && (
                 <div className="flex items-center gap-2">
                   <Link to={`/registros/${id}/historico`}
@@ -180,30 +180,28 @@ export default function VerRegistro({ user }: { user: User | null }) {
                     </svg>
                     Editar
                   </Link>
-                  {ehDono && (
-                    confirmando ? (
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-gray-500 dark:text-gray-400">Confirmar?</span>
-                        <button onClick={handleExcluir} disabled={excluindo}
-                          className="text-xs text-white bg-red-500 hover:bg-red-600 px-2.5 py-1.5 rounded-lg transition">
-                          {excluindo ? 'Excluindo...' : 'Sim'}
-                        </button>
-                        <button onClick={() => setConfirmando(false)}
-                          className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 px-2 py-1.5 transition">
-                          Cancelar
-                        </button>
-                      </div>
-                    ) : (
-                      <button onClick={() => setConfirmando(true)}
-                        className="flex items-center gap-1.5 text-sm text-gray-400 dark:text-gray-500 hover:text-red-500
-                                   px-3 py-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 transition">
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                        Excluir
+                  {confirmando ? (
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-500 dark:text-gray-400">Confirmar?</span>
+                      <button onClick={handleExcluir} disabled={excluindo}
+                        className="text-xs text-white bg-red-500 hover:bg-red-600 px-2.5 py-1.5 rounded-lg transition">
+                        {excluindo ? 'Excluindo...' : 'Sim'}
                       </button>
-                    )
+                      <button onClick={() => setConfirmando(false)}
+                        className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 px-2 py-1.5 transition">
+                        Cancelar
+                      </button>
+                    </div>
+                  ) : (
+                    <button onClick={() => setConfirmando(true)}
+                      className="flex items-center gap-1.5 text-sm text-gray-400 dark:text-gray-500 hover:text-red-500
+                                 px-3 py-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 transition">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                      Excluir
+                    </button>
                   )}
                 </div>
               )}
