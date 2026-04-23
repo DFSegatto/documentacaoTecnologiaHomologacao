@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase, type ArquivoUpload, MAX_FILE_SIZE } from '../lib/supabase'
 
 interface Props {
@@ -15,6 +15,14 @@ function formatarTamanho(bytes: number): string {
 export default function UploadAnexos({ onUpload, arquivosExistentes = [] }: Props) {
   const [uploading,  setUploading]  = useState(false)
   const [arquivos,   setArquivos]   = useState<ArquivoUpload[]>(arquivosExistentes)
+
+  // Sincroniza quando arquivosExistentes muda externamente (ex: restaurar rascunho)
+  const prevAnexosRef = useRef(arquivosExistentes)
+  useEffect(() => {
+    if (arquivosExistentes === prevAnexosRef.current) return
+    prevAnexosRef.current = arquivosExistentes
+    setArquivos(arquivosExistentes)
+  }, [arquivosExistentes])
   const [drag,       setDrag]       = useState(false)
   const [erros,      setErros]      = useState<string[]>([])
   const [progresso,  setProgresso]  = useState<Record<string, 'enviando' | 'ok' | 'erro'>>({})
