@@ -1,4 +1,5 @@
-import { useEditor, EditorContent, useEffect, useRef, type Editor as TiptapEditor } from '@tiptap/react'
+import { useEffect, useRef } from 'react'
+import { useEditor, EditorContent, type Editor as TiptapEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
