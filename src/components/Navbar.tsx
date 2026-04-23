@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useNavigationGuard } from "../context/NavigationGuardContext";
 import { supabase } from "../lib/supabase";
 import { DOCS_SENIOR_NOTAS_VERSAO } from "../lib/documentacaoSenior";
 import ThemeToggle from "./ThemeToggle";
 
 export default function Navbar({ userEmail }: { userEmail?: string | null }) {
   const navigate = useNavigate();
+  const { navegar } = useNavigationGuard();
   const [menuDocsAberto, setMenuDocsAberto] = useState(false);
   const refMenuDocs = useRef<HTMLDivElement>(null);
 
@@ -29,7 +31,7 @@ export default function Navbar({ userEmail }: { userEmail?: string | null }) {
   return (
     <header className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 sticky top-0 z-40">
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2.5 group">
+        <Link to="/" onClick={e => { e.preventDefault(); navegar(() => navigate("/")) }} className="flex items-center gap-2.5 group">
           <div className="w-7 h-7 rounded-lg bg-brand-600 flex items-center justify-center">
             <svg
               className="w-4 h-4 text-white"
@@ -53,6 +55,7 @@ export default function Navbar({ userEmail }: { userEmail?: string | null }) {
         <div className="flex items-center gap-1">
           <Link
             to="/sessoes"
+            onClick={e => { e.preventDefault(); navegar(() => navigate("/sessoes")) }}
             className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm px-3 py-1.5 rounded-lg transition"
           >
             <svg
@@ -72,6 +75,7 @@ export default function Navbar({ userEmail }: { userEmail?: string | null }) {
           </Link>
           <Link
             to="/categorias"
+            onClick={e => { e.preventDefault(); navegar(() => navigate("/categorias")) }}
             className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm px-3 py-1.5 rounded-lg transition"
           >
             <svg
@@ -156,6 +160,7 @@ export default function Navbar({ userEmail }: { userEmail?: string | null }) {
 
           <Link
             to="/registros/novo"
+            onClick={e => { e.preventDefault(); navegar(() => navigate("/registros/novo")) }}
             className="flex items-center gap-1.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 py-1.5 rounded-lg transition ml-1"
           >
             <svg

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigationGuard } from '../context/NavigationGuardContext'
 import { supabase, agruparSessoes, type CategoriaDB, type Sessao, type SessaoComFilhas, type ArquivoUpload } from '../lib/supabase'
 import Editor from './Editor'
 import UploadAnexos from './UploadAnexos'
@@ -54,6 +55,7 @@ interface DadosRascunho {
 export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
   const navigate       = useNavigate()
   const [searchParams] = useSearchParams()
+  const { registrarGuard, removerGuard } = useNavigationGuard()
 
   const [userId, setUserId] = useState('')
   const CHAVE = userId ? chaveRascunho(modo, userId, inicial?.id) : ''
@@ -250,6 +252,17 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
     }, 1000)
     return () => clearTimeout(timer)
   }, [titulo, sessaoId, categoriaId, conteudo, privado, comCredencial, credenciais, anexos, formSujo, CHAVE])
+
+  // Registra/remove o guard de navegação global (Navbar, breadcrumbs, etc.)
+  useEffect(() => {
+    if (formSujo && !salvandoRef.current) {
+      registrarGuard(confirmarSaida)
+    } else {
+      removerGuard()
+    }
+    return () => removerGuard()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formSujo])
 
   // Alerta ao fechar aba/recarregar
   useEffect(() => {

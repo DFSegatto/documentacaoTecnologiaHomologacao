@@ -19,6 +19,8 @@ interface RegistroRaw {
 
 export default function EditarRegistro({ user }: { user: User | null }) {
   const { id }          = useParams<{ id: string }>()
+  const navigate        = useNavigate()
+  const { navegar }     = useNavigationGuard()
   const [registro,      setRegistro]      = useState<RegistroRaw | null>(null)
   const [anexos,        setAnexos]        = useState<ArquivoUpload[]>([])
   const [credenciais,   setCredenciais]   = useState<CredencialForm[]>([])
@@ -114,7 +116,7 @@ export default function EditarRegistro({ user }: { user: User | null }) {
       <Navbar userEmail={user?.email} />
       <main className="max-w-3xl mx-auto px-4 py-8 flex-1">
         <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 mb-6">
-          <Link to="/" className="hover:text-gray-600 dark:hover:text-gray-300 transition">Registros</Link>
+          <Link to="/" onClick={e => { e.preventDefault(); navegar(() => navigate('/')) }} className="hover:text-gray-600 dark:hover:text-gray-300 transition">Registros</Link>
           <span>/</span>
           <Link to={`/registros/${id}`} className="hover:text-gray-600 dark:hover:text-gray-300 transition truncate max-w-xs">
             {registro.titulo}
