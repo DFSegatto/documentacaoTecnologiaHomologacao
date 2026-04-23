@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate, useSearchParams, useBlocker } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase, agruparSessoes, type CategoriaDB, type Sessao, type SessaoComFilhas, type ArquivoUpload } from '../lib/supabase'
 import Editor from './Editor'
 import UploadAnexos from './UploadAnexos'
@@ -60,10 +60,13 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
   const [salvando,      setSalvando]      = useState(false)
   const [erro,          setErro]          = useState('')
 
+  // Rascunho
   const [rascunhoDisponivel, setRascunhoDisponivel] = useState(false)
   const [rascunhoData,       setRascunhoData]       = useState<DadosRascunho | null>(null)
   const [formSujo,           setFormSujo]           = useState(false)
-  const salvandoRef = useRef(false)
+  const [modalSaida,         setModalSaida]         = useState(false)
+  const salvandoRef  = useRef(false)
+  const pendingNavRef = useRef<(() => void) | null>(null)
 
   // Verifica rascunho salvo ao montar
   useEffect(() => {
@@ -77,7 +80,8 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
         }
       }
     } catch { /* ignora */ }
-  }, [CHAVE])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     supabase.from('sessoes').select('*').order('nome').then(({ data }) => {
@@ -90,9 +94,10 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
       setCategorias(cats)
       if (!categoriaId && cats.length > 0) setCategoriaId(cats[0].id)
     })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Detecta alterações em relação ao estado inicial
+  // Detecta se o formulário foi alterado
   useEffect(() => {
     const tituloInicial    = inicial?.titulo       ?? ''
     const conteudoInicial  = inicial?.conteudo     ?? ''
@@ -100,14 +105,13 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
     const categoriaInicial = inicial?.categoria_id ?? ''
     const privadoInicial   = inicial?.privado      ?? false
 
-    const sujo =
+    setFormSujo(
       titulo      !== tituloInicial    ||
       conteudo    !== conteudoInicial  ||
       sessaoId    !== sessaoInicial    ||
       categoriaId !== categoriaInicial ||
       privado     !== privadoInicial
-
-    setFormSujo(sujo)
+    )
   }, [titulo, conteudo, sessaoId, categoriaId, privado, inicial, searchParams])
 
   // Salva rascunho automaticamente (debounce 1s)
@@ -115,33 +119,52 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
     if (!formSujo) return
     const timer = setTimeout(() => {
       if (salvandoRef.current) return
-      const rascunho: DadosRascunho = {
-        titulo, sessaoId, categoriaId, conteudo, privado, comCredencial,
-        salvoEm: new Date().toISOString(),
-      }
-      try { localStorage.setItem(CHAVE, JSON.stringify(rascunho)) } catch { /* quota */ }
+      try {
+        localStorage.setItem(CHAVE, JSON.stringify({
+          titulo, sessaoId, categoriaId, conteudo, privado, comCredencial,
+          salvoEm: new Date().toISOString(),
+        } as DadosRascunho))
+      } catch { /* quota */ }
     }, 1000)
     return () => clearTimeout(timer)
   }, [titulo, sessaoId, categoriaId, conteudo, privado, comCredencial, formSujo, CHAVE])
 
-  // Bloqueia navegação interna se há alterações
-  const blocker = useBlocker(
-    ({ currentLocation, nextLocation }) =>
-      formSujo && !salvandoRef.current && currentLocation.pathname !== nextLocation.pathname
-  )
-
-  // Alerta ao fechar aba
+  // Alerta ao fechar aba/recarregar
   useEffect(() => {
-    function handleBeforeUnload(e: BeforeUnloadEvent) {
+    const handler = (e: BeforeUnloadEvent) => {
       if (formSujo && !salvandoRef.current) {
         e.preventDefault()
         e.returnValue = ''
       }
     }
-    window.addEventListener('beforeunload', handleBeforeUnload)
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+    window.addEventListener('beforeunload', handler)
+    return () => window.removeEventListener('beforeunload', handler)
   }, [formSujo])
 
+  // ── Helpers de navegação com confirmação ────────────────────────────────────
+  function confirmarSaida(acao: () => void) {
+    if (formSujo && !salvandoRef.current) {
+      pendingNavRef.current = acao
+      setModalSaida(true)
+    } else {
+      acao()
+    }
+  }
+
+  function prosseguirSaida() {
+    limparRascunho()
+    setModalSaida(false)
+    const acao = pendingNavRef.current
+    pendingNavRef.current = null
+    acao?.()
+  }
+
+  function cancelarSaida() {
+    pendingNavRef.current = null
+    setModalSaida(false)
+  }
+
+  // ── Rascunho ────────────────────────────────────────────────────────────────
   function restaurarRascunho() {
     if (!rascunhoData) return
     setTitulo(rascunhoData.titulo)
@@ -164,6 +187,7 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
     localStorage.removeItem(CHAVE)
   }
 
+  // ── Credenciais ─────────────────────────────────────────────────────────────
   function adicionarCredencial() {
     setCredenciais(prev => [...prev, { ...CREDENCIAL_VAZIA }])
   }
@@ -176,6 +200,7 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
     setCredenciais(prev => prev.filter((_, i) => i !== indice))
   }
 
+  // ── Submit ──────────────────────────────────────────────────────────────────
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!titulo.trim()) { setErro('O título é obrigatório.'); return }
@@ -236,7 +261,9 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
           .select('ordem, senha_cifrada')
           .eq('registro_id', registroId)
           .order('ordem', { ascending: true })
-        credsAtuais?.forEach(c => { senhasAtuais[c.ordem] = c.senha_cifrada })
+        credsAtuais?.forEach((c: { ordem: number; senha_cifrada: string }) => {
+          senhasAtuais[c.ordem] = c.senha_cifrada
+        })
       }
 
       await supabase.from('credenciais').delete().eq('registro_id', registroId)
@@ -270,7 +297,9 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
       await supabase.from('anexos').delete().eq('registro_id', registroId)
       if (anexos.length > 0) {
         await supabase.from('anexos').insert(
-          anexos.map(a => ({ registro_id: registroId, nome: a.nome, url: a.url, tipo: a.tipo, tamanho: a.tamanho }))
+          anexos.map((a: ArquivoUpload) => ({
+            registro_id: registroId, nome: a.nome, url: a.url, tipo: a.tipo, tamanho: a.tamanho,
+          }))
         )
       }
 
@@ -298,9 +327,10 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
     } catch { return '' }
   }
 
+  // ── Render ──────────────────────────────────────────────────────────────────
   return (
     <>
-      {/* Banner de rascunho disponível */}
+      {/* Banner: rascunho encontrado */}
       {rascunhoDisponivel && rascunhoData && (
         <div className="mb-5 flex items-start gap-3 rounded-xl border border-amber-300 dark:border-amber-700
                         bg-amber-50 dark:bg-amber-950/30 px-4 py-3.5">
@@ -329,10 +359,10 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
         </div>
       )}
 
-      {/* Modal de confirmação ao sair (bloqueio React Router) */}
-      {blocker.state === 'blocked' && (
+      {/* Modal: confirmar saída */}
+      {modalSaida && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => blocker.reset()} />
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={cancelarSaida} />
           <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl
                           border border-gray-200 dark:border-gray-700 w-full max-w-sm p-6">
             <div className="flex items-center gap-3 mb-4">
@@ -355,11 +385,11 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
               💾 Um rascunho foi salvo automaticamente — você pode continuar de onde parou.
             </p>
             <div className="flex flex-col gap-2">
-              <button type="button" onClick={() => blocker.reset()}
+              <button type="button" onClick={cancelarSaida}
                 className="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium transition">
                 Continuar editando
               </button>
-              <button type="button" onClick={() => { limparRascunho(); blocker.proceed() }}
+              <button type="button" onClick={prosseguirSaida}
                 className="w-full py-2.5 rounded-xl border border-gray-200 dark:border-gray-700
                            text-sm text-gray-600 dark:text-gray-400
                            hover:bg-gray-50 dark:hover:bg-gray-800 transition">
@@ -426,14 +456,16 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
             <div className="flex flex-wrap gap-2 items-start">
               <button type="button" onClick={() => setSessaoId('')}
                 className={`self-start px-3.5 py-1.5 rounded-lg text-sm font-medium transition border
-                  ${!sessaoId ? 'bg-gray-800 dark:bg-gray-700 text-white border-gray-800 dark:border-gray-700' : 'bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'}`}>
+                  ${!sessaoId ? 'bg-gray-800 dark:bg-gray-700 text-white border-gray-800 dark:border-gray-700'
+                              : 'bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'}`}>
                 Sem sessão
               </button>
               {arvore.map(sessao => (
                 <div key={sessao.id} className="flex flex-col gap-1.5">
                   <button type="button" onClick={() => setSessaoId(sessao.id)}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-sm font-medium transition border-2
-                      ${sessaoId === sessao.id ? 'text-white border-transparent' : 'bg-white dark:bg-gray-900 border-transparent hover:border-gray-200 dark:hover:border-gray-600'}`}
+                      ${sessaoId === sessao.id ? 'text-white border-transparent'
+                                               : 'bg-white dark:bg-gray-900 border-transparent hover:border-gray-200 dark:hover:border-gray-600'}`}
                     style={sessaoId === sessao.id ? { backgroundColor: sessao.cor } : { color: sessao.cor, borderColor: sessao.cor + '44' }}>
                     <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -444,7 +476,8 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
                   {sessao.filhas.map(filha => (
                     <button key={filha.id} type="button" onClick={() => setSessaoId(filha.id)}
                       className={`flex items-center gap-1 pl-5 pr-3 py-1 rounded-lg text-xs font-medium transition border-2
-                        ${sessaoId === filha.id ? 'text-white border-transparent' : 'bg-white dark:bg-gray-900 border-transparent hover:border-gray-200 dark:hover:border-gray-600'}`}
+                        ${sessaoId === filha.id ? 'text-white border-transparent'
+                                                : 'bg-white dark:bg-gray-900 border-transparent hover:border-gray-200 dark:hover:border-gray-600'}`}
                       style={sessaoId === filha.id ? { backgroundColor: filha.cor } : { color: filha.cor, borderColor: filha.cor + '33' }}>
                       <span className="text-gray-300 mr-0.5" style={{ fontSize: 10 }}>└</span>
                       <svg className="w-3 h-3 flex-shrink-0 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -496,7 +529,7 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
           )}
         </div>
 
-        {/* Bloco de Credenciais */}
+        {/* Credenciais */}
         <div className="border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden">
           <button type="button" onClick={() => setComCredencial(v => !v)}
             className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition">
@@ -523,7 +556,6 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
               )}
             </div>
           </button>
-
           {comCredencial && (
             <div className="border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50">
               <div className="p-4 space-y-3">
@@ -540,8 +572,9 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
                 ))}
                 <button type="button" onClick={adicionarCredencial}
                   className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2
-                             border-dashed border-gray-200 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-400 hover:border-brand-300
-                             dark:hover:border-brand-600 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-brand-50/30 dark:hover:bg-brand-950/20 transition">
+                             border-dashed border-gray-200 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-400
+                             hover:border-brand-300 dark:hover:border-brand-600 hover:text-brand-600 dark:hover:text-brand-400
+                             hover:bg-brand-50/30 dark:hover:bg-brand-950/20 transition">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
@@ -571,10 +604,14 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
           <UploadAnexos onUpload={setAnexos} arquivosExistentes={anexos} />
         </div>
 
-        {erro && <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 px-4 py-3 rounded-xl">{erro}</p>}
+        {erro && (
+          <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 px-4 py-3 rounded-xl">
+            {erro}
+          </p>
+        )}
 
         <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-800">
-          <button type="button" onClick={() => navigate(-1)}
+          <button type="button" onClick={() => confirmarSaida(() => navigate(-1))}
             className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition">
             Cancelar
           </button>
