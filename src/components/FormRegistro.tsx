@@ -92,24 +92,71 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
   const salvandoRef  = useRef(false)
   const pendingNavRef = useRef<(() => void) | null>(null)
 
-  // Verifica rascunho salvo ao montar (só executa quando userId estiver disponível)
+  // Verifica rascunho ao montar (só executa quando userId estiver disponível)
+  // Usa sessionStorage para distinguir dois cenários:
+  //   - Mesma sessão de navegação (voltou de outra aba do browser) → restaura silenciosamente
+  //   - Nova sessão (abriu a página do zero / fechou e reabriu) → mostra banner de confirmação
   useEffect(() => {
     if (!CHAVE) return
     try {
       const raw = localStorage.getItem(CHAVE)
-      if (raw) {
-        const dados = JSON.parse(raw) as DadosRascunho
-        const temConteudo =
-          dados.titulo.trim() ||
-          dados.conteudo.trim() ||
-          dados.credenciais?.length > 0 ||
-          dados.anexos?.length > 0
-        if (temConteudo) {
-          setRascunhoDisponivel(true)
-          setRascunhoData(dados)
+      if (!raw) return
+      const dados = JSON.parse(raw) as DadosRascunho
+
+      const rascunhoTemConteudo =
+        dados.titulo.trim() ||
+        dados.conteudo.trim() ||
+        dados.credenciais?.length > 0 ||
+        dados.anexos?.length > 0
+
+      if (!rascunhoTemConteudo) return
+
+      // sessionStorage persiste apenas enquanto a aba está aberta.
+      // Se a chave existe, o usuário estava nesta página nesta sessão → restaura direto.
+      // Se não existe, é uma nova visita → mostra o banner pedindo confirmação.
+      const SESSAO_KEY = `sessao_ativa_${CHAVE}`
+      const mesmasSessao = sessionStorage.getItem(SESSAO_KEY) === '1'
+
+      if (mesmasSessao) {
+        // Voltou de outra aba do browser — restaura silenciosamente sem interromper
+        setTitulo(dados.titulo)
+        setSessaoId(dados.sessaoId)
+        setCategoriaId(dados.categoriaId)
+        setConteudo(dados.conteudo)
+        setPrivado(dados.privado)
+        setComCredencial(dados.comCredencial)
+        if (dados.credenciais?.length) {
+          setCredenciais(dados.credenciais.map(c => ({
+            tipo:        c.tipo as CredencialForm['tipo'],
+            label:       c.label,
+            host:        c.host,
+            porta:       c.porta,
+            usuario:     c.usuario,
+            senha:       '',
+            dominio:     c.dominio,
+            observacoes: c.observacoes,
+          })))
         }
+        if (dados.anexos?.length) setAnexos(dados.anexos)
+      } else {
+        // Nova sessão — pergunta ao usuário
+        setRascunhoDisponivel(true)
+        setRascunhoData(dados)
       }
     } catch { /* ignora */ }
+  }, [CHAVE])
+
+  // Marca a sessão como ativa assim que o componente monta e CHAVE está pronta
+  // Isso garante que na próxima vez que a página carregar (ex: tab discard),
+  // o rascunho seja restaurado silenciosamente
+  useEffect(() => {
+    if (!CHAVE) return
+    const SESSAO_KEY = `sessao_ativa_${CHAVE}`
+    sessionStorage.setItem(SESSAO_KEY, '1')
+    return () => {
+      // Limpa ao desmontar definitivamente (navegação para outra rota)
+      // Não limpa quando o browser apenas descarta a aba (sessionStorage persiste)
+    }
   }, [CHAVE])
 
   useEffect(() => {
@@ -216,11 +263,16 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
     return () => window.removeEventListener('beforeunload', handler)
   }, [formSujo])
 
+  // Ref para distinguir saves feitos pela Page Visibility API
+  // Evita que o banner de rascunho apareça ao voltar de outra aba do browser
+  const savedByVisibilityRef = useRef(false)
+
   // Salva imediatamente ao trocar de aba (Page Visibility API)
   // Cobre o caso de tab discard pelo browser quando há pouca memória
   useEffect(() => {
     function handleVisibilityChange() {
       if (document.visibilityState === 'hidden' && formSujo && CHAVE && !salvandoRef.current) {
+        savedByVisibilityRef.current = true
         try {
           localStorage.setItem(CHAVE, JSON.stringify({
             titulo, sessaoId, categoriaId, conteudo, privado, comCredencial,
@@ -232,6 +284,13 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
             salvoEm: new Date().toISOString(),
           } satisfies DadosRascunho))
         } catch { /* quota */ }
+      } else if (document.visibilityState === 'visible') {
+        // Voltou para a aba — limpa o flag se o React ainda tem o estado em memória
+        // (tab discard não ocorreu), para não suprimir banners futuros legítimos
+        if (savedByVisibilityRef.current) {
+          savedByVisibilityRef.current = false
+          setRascunhoDisponivel(false)
+        }
       }
     }
     document.addEventListener('visibilitychange', handleVisibilityChange)
@@ -317,6 +376,7 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
 
   function limparRascunho() {
     localStorage.removeItem(CHAVE)
+    sessionStorage.removeItem(`sessao_ativa_${CHAVE}`)
   }
 
   // ── Credenciais ─────────────────────────────────────────────────────────────
