@@ -26,6 +26,17 @@ function chaveRascunho(modo: 'criar' | 'editar', id?: string) {
   return modo === 'editar' ? `rascunho_editar_${id}` : 'rascunho_novo'
 }
 
+// Credenciais no rascunho — sem senha (dado sensível nunca vai para localStorage)
+interface CredencialRascunho {
+  tipo: string
+  label: string
+  host: string
+  porta: string
+  usuario: string
+  dominio: string
+  observacoes: string
+}
+
 interface DadosRascunho {
   titulo: string
   sessaoId: string
@@ -33,6 +44,8 @@ interface DadosRascunho {
   conteudo: string
   privado: boolean
   comCredencial: boolean
+  credenciais: CredencialRascunho[]
+  anexos: ArquivoUpload[]
   salvoEm: string
 }
 
@@ -74,7 +87,12 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
       const raw = localStorage.getItem(CHAVE)
       if (raw) {
         const dados = JSON.parse(raw) as DadosRascunho
-        if (dados.titulo.trim() || dados.conteudo.trim()) {
+        const temConteudo =
+          dados.titulo.trim() ||
+          dados.conteudo.trim() ||
+          dados.credenciais?.length > 0 ||
+          dados.anexos?.length > 0
+        if (temConteudo) {
           setRascunhoDisponivel(true)
           setRascunhoData(dados)
         }
@@ -110,9 +128,41 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
       conteudo    !== conteudoInicial  ||
       sessaoId    !== sessaoInicial    ||
       categoriaId !== categoriaInicial ||
-      privado     !== privadoInicial
+      privado     !== privadoInicial   ||
+      comCredencial !== (inicial?.temCredencial ?? false) ||
+      credenciais.some((c, i) => {
+        const orig = inicial?.credenciaisExistentes?.[i]
+        return !orig || c.tipo !== orig.tipo || c.label !== orig.label ||
+               c.host !== orig.host || c.porta !== orig.porta ||
+               c.usuario !== orig.usuario || c.dominio !== orig.dominio ||
+               c.observacoes !== orig.observacoes
+      }) ||
+      anexos.length !== (inicial?.anexosExistentes?.length ?? 0)
     )
-  }, [titulo, conteudo, sessaoId, categoriaId, privado, inicial, searchParams])
+  }, [titulo, conteudo, sessaoId, categoriaId, privado, comCredencial, credenciais, anexos, inicial, searchParams])
+
+  // Monta objeto de rascunho com todos os campos (sem senhas)
+  function montarRascunho(): DadosRascunho {
+    return {
+      titulo,
+      sessaoId,
+      categoriaId,
+      conteudo,
+      privado,
+      comCredencial,
+      credenciais: credenciais.map(c => ({
+        tipo:        c.tipo,
+        label:       c.label,
+        host:        c.host,
+        porta:       c.porta,
+        usuario:     c.usuario,
+        dominio:     c.dominio,
+        observacoes: c.observacoes,
+      })),
+      anexos,
+      salvoEm: new Date().toISOString(),
+    }
+  }
 
   // Salva rascunho automaticamente (debounce 1s)
   useEffect(() => {
@@ -120,14 +170,12 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
     const timer = setTimeout(() => {
       if (salvandoRef.current) return
       try {
-        localStorage.setItem(CHAVE, JSON.stringify({
-          titulo, sessaoId, categoriaId, conteudo, privado, comCredencial,
-          salvoEm: new Date().toISOString(),
-        } as DadosRascunho))
+        localStorage.setItem(CHAVE, JSON.stringify(montarRascunho()))
       } catch { /* quota */ }
     }, 1000)
     return () => clearTimeout(timer)
-  }, [titulo, sessaoId, categoriaId, conteudo, privado, comCredencial, formSujo, CHAVE])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [titulo, sessaoId, categoriaId, conteudo, privado, comCredencial, credenciais, anexos, formSujo, CHAVE])
 
   // Alerta ao fechar aba/recarregar
   useEffect(() => {
@@ -153,10 +201,7 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
 
   function salvarRascunhoESair() {
     try {
-      localStorage.setItem(CHAVE, JSON.stringify({
-        titulo, sessaoId, categoriaId, conteudo, privado, comCredencial,
-        salvoEm: new Date().toISOString(),
-      } as DadosRascunho))
+      localStorage.setItem(CHAVE, JSON.stringify(montarRascunho()))
     } catch { /* quota */ }
     setModalSaida(false)
     const acao = pendingNavRef.current
@@ -186,6 +231,23 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
     setConteudo(rascunhoData.conteudo)
     setPrivado(rascunhoData.privado)
     setComCredencial(rascunhoData.comCredencial)
+    // Restaura credenciais (sem senha — campo fica vazio)
+    if (rascunhoData.credenciais?.length) {
+      setCredenciais(rascunhoData.credenciais.map(c => ({
+        tipo:        c.tipo as CredencialForm['tipo'],
+        label:       c.label,
+        host:        c.host,
+        porta:       c.porta,
+        usuario:     c.usuario,
+        senha:       '',   // nunca salvo no rascunho
+        dominio:     c.dominio,
+        observacoes: c.observacoes,
+      })))
+    }
+    // Restaura anexos
+    if (rascunhoData.anexos?.length) {
+      setAnexos(rascunhoData.anexos)
+    }
     setRascunhoDisponivel(false)
     setRascunhoData(null)
   }
