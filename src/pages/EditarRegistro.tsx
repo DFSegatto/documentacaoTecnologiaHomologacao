@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import type { User } from '@supabase/supabase-js'
 import { supabase, type ArquivoUpload, type Credencial } from '../lib/supabase'
 import type { CredencialForm } from '../components/FormCredencial'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import FormRegistro from '../components/FormRegistro'
+import { useNavigationGuard } from '../context/NavigationGuardContext'
 
 interface RegistroRaw {
   id: string
