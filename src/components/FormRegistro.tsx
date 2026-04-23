@@ -319,6 +319,9 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
         salvoEm: new Date().toISOString(),
       } satisfies DadosRascunho))
     } catch { /* quota */ }
+    // Limpa a flag de sessão para que, ao retornar à página,
+    // o banner amarelo apareça pedindo confirmação para restaurar
+    sessionStorage.removeItem(`sessao_ativa_${CHAVE}`)
     setModalSaida(false)
     const acao = pendingNavRef.current
     pendingNavRef.current = null
