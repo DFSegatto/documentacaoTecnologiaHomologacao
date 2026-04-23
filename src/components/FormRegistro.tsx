@@ -58,6 +58,7 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
   const [titulo,        setTitulo]        = useState(inicial?.titulo       ?? '')
   const [sessaoId,      setSessaoId]      = useState(inicial?.sessao_id    ?? searchParams.get('sessao') ?? '')
   const [categoriaId,   setCategoriaId]   = useState(inicial?.categoria_id ?? '')
+  const categoriaAutoSetRef = useRef(false) // true quando foi setado automaticamente ao carregar
   const [conteudo,      setConteudo]      = useState(inicial?.conteudo     ?? '')
   const [privado,       setPrivado]       = useState(inicial?.privado      ?? false)
   const [comCredencial, setComCredencial] = useState(inicial?.temCredencial ?? false)
@@ -110,7 +111,10 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
     supabase.from('categorias').select('*').order('nome').then(({ data }) => {
       const cats = (data ?? []) as CategoriaDB[]
       setCategorias(cats)
-      if (!categoriaId && cats.length > 0) setCategoriaId(cats[0].id)
+      if (!categoriaId && cats.length > 0) {
+        categoriaAutoSetRef.current = true
+        setCategoriaId(cats[0].id)
+      }
     })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -123,11 +127,15 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
     const categoriaInicial = inicial?.categoria_id ?? ''
     const privadoInicial   = inicial?.privado      ?? false
 
+    const categoriaAlterada = categoriaAutoSetRef.current
+      ? false  // ignorar mudança automática ao carregar
+      : categoriaId !== categoriaInicial
+
     setFormSujo(
       titulo      !== tituloInicial    ||
       conteudo    !== conteudoInicial  ||
       sessaoId    !== sessaoInicial    ||
-      categoriaId !== categoriaInicial ||
+      categoriaAlterada                ||
       privado     !== privadoInicial   ||
       comCredencial !== (inicial?.temCredencial ?? false) ||
       credenciais.some((c, i) => {
@@ -165,16 +173,25 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
   }
 
   // Salva rascunho automaticamente (debounce 1s)
+  // Inline dos valores para evitar closure stale em montarRascunho
   useEffect(() => {
     if (!formSujo) return
+    const snapshot = {
+      titulo, sessaoId, categoriaId, conteudo, privado, comCredencial,
+      credenciais: credenciais.map(c => ({
+        tipo: c.tipo, label: c.label, host: c.host, porta: c.porta,
+        usuario: c.usuario, dominio: c.dominio, observacoes: c.observacoes,
+      })),
+      anexos,
+      salvoEm: new Date().toISOString(),
+    } satisfies DadosRascunho
     const timer = setTimeout(() => {
       if (salvandoRef.current) return
       try {
-        localStorage.setItem(CHAVE, JSON.stringify(montarRascunho()))
+        localStorage.setItem(CHAVE, JSON.stringify(snapshot))
       } catch { /* quota */ }
     }, 1000)
     return () => clearTimeout(timer)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [titulo, sessaoId, categoriaId, conteudo, privado, comCredencial, credenciais, anexos, formSujo, CHAVE])
 
   // Alerta ao fechar aba/recarregar
@@ -201,7 +218,15 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
 
   function salvarRascunhoESair() {
     try {
-      localStorage.setItem(CHAVE, JSON.stringify(montarRascunho()))
+      localStorage.setItem(CHAVE, JSON.stringify({
+        titulo, sessaoId, categoriaId, conteudo, privado, comCredencial,
+        credenciais: credenciais.map(c => ({
+          tipo: c.tipo, label: c.label, host: c.host, porta: c.porta,
+          usuario: c.usuario, dominio: c.dominio, observacoes: c.observacoes,
+        })),
+        anexos,
+        salvoEm: new Date().toISOString(),
+      } satisfies DadosRascunho))
     } catch { /* quota */ }
     setModalSaida(false)
     const acao = pendingNavRef.current
@@ -631,7 +656,7 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
           ) : (
             <div className="flex flex-wrap gap-2">
               {categorias.map(cat => (
-                <button key={cat.id} type="button" onClick={() => setCategoriaId(cat.id)}
+                <button key={cat.id} type="button" onClick={() => { categoriaAutoSetRef.current = false; setCategoriaId(cat.id) }}
                   className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition border-2 ${cat.cor}
                     ${categoriaId === cat.id ? 'border-gray-600 dark:border-gray-400 scale-105' : 'border-transparent'}`}>
                   {cat.nome}
