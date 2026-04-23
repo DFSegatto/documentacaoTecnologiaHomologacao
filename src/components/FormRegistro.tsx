@@ -17,7 +17,7 @@ interface RegistroFormData {
   anexosExistentes?: ArquivoUpload[]
 }
 
-interface Props {
+interface FormRegistroProps {
   inicial?: RegistroFormData
   modo: 'criar' | 'editar'
 }
@@ -36,7 +36,7 @@ interface DadosRascunho {
   salvoEm: string
 }
 
-export default function FormRegistro({ inicial, modo }: Props) {
+export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
   const navigate       = useNavigate()
   const [searchParams] = useSearchParams()
 
