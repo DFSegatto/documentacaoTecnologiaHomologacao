@@ -216,6 +216,28 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
     return () => window.removeEventListener('beforeunload', handler)
   }, [formSujo])
 
+  // Salva imediatamente ao trocar de aba (Page Visibility API)
+  // Cobre o caso de tab discard pelo browser quando há pouca memória
+  useEffect(() => {
+    function handleVisibilityChange() {
+      if (document.visibilityState === 'hidden' && formSujo && CHAVE && !salvandoRef.current) {
+        try {
+          localStorage.setItem(CHAVE, JSON.stringify({
+            titulo, sessaoId, categoriaId, conteudo, privado, comCredencial,
+            credenciais: credenciais.map(c => ({
+              tipo: c.tipo, label: c.label, host: c.host, porta: c.porta,
+              usuario: c.usuario, dominio: c.dominio, observacoes: c.observacoes,
+            })),
+            anexos,
+            salvoEm: new Date().toISOString(),
+          } satisfies DadosRascunho))
+        } catch { /* quota */ }
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [titulo, sessaoId, categoriaId, conteudo, privado, comCredencial, credenciais, anexos, formSujo, CHAVE])
+
   // ── Helpers de navegação com confirmação ────────────────────────────────────
   function confirmarSaida(acao: () => void) {
     if (formSujo && !salvandoRef.current) {
