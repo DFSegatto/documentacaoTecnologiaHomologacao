@@ -486,3 +486,32 @@ create policy "dono cria credenciais" on credenciais for insert to authenticated
 
 create policy "dono exclui credenciais" on credenciais for delete to authenticated
   using (exists (select 1 from registros r where r.id = credenciais.registro_id and (r.privado = false or r.criado_por = auth.uid())));
+
+-- ============================================================
+-- CORREÇÃO: Políticas de UPDATE e DELETE de registros
+-- Regra: públicos → qualquer autenticado edita/exclui
+--        privados → só o criador edita/exclui
+-- ============================================================
+
+drop policy if exists "auth editam registros"  on registros;
+drop policy if exists "auth excluem registros" on registros;
+
+create policy "edicao de registros com privacidade"
+  on registros for update
+  to authenticated
+  using (
+    privado = false
+    or criado_por = auth.uid()
+  )
+  with check (
+    privado = false
+    or criado_por = auth.uid()
+  );
+
+create policy "exclusao de registros com privacidade"
+  on registros for delete
+  to authenticated
+  using (
+    privado = false
+    or criado_por = auth.uid()
+  );

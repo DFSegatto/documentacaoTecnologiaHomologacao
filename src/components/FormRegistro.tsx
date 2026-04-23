@@ -22,8 +22,10 @@ interface FormRegistroProps {
   modo: 'criar' | 'editar'
 }
 
-function chaveRascunho(modo: 'criar' | 'editar', id?: string) {
-  return modo === 'editar' ? `rascunho_editar_${id}` : 'rascunho_novo'
+function chaveRascunho(modo: 'criar' | 'editar', userId: string, id?: string) {
+  return modo === 'editar'
+    ? `rascunho_editar_${userId}_${id}`
+    : `rascunho_novo_${userId}`
 }
 
 // Credenciais no rascunho — sem senha (dado sensível nunca vai para localStorage)
@@ -53,7 +55,15 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
   const navigate       = useNavigate()
   const [searchParams] = useSearchParams()
 
-  const CHAVE = chaveRascunho(modo, inicial?.id)
+  const [userId, setUserId] = useState('')
+  const CHAVE = userId ? chaveRascunho(modo, userId, inicial?.id) : ''
+
+  // Busca o userId assim que o componente monta
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) setUserId(data.user.id)
+    })
+  }, [])
 
   const [titulo,        setTitulo]        = useState(inicial?.titulo       ?? '')
   const [sessaoId,      setSessaoId]      = useState(inicial?.sessao_id    ?? searchParams.get('sessao') ?? '')
@@ -82,8 +92,9 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
   const salvandoRef  = useRef(false)
   const pendingNavRef = useRef<(() => void) | null>(null)
 
-  // Verifica rascunho salvo ao montar
+  // Verifica rascunho salvo ao montar (só executa quando userId estiver disponível)
   useEffect(() => {
+    if (!CHAVE) return
     try {
       const raw = localStorage.getItem(CHAVE)
       if (raw) {
@@ -99,8 +110,7 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
         }
       }
     } catch { /* ignora */ }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [CHAVE])
 
   useEffect(() => {
     supabase.from('sessoes').select('*').order('nome').then(({ data }) => {
@@ -175,7 +185,7 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
   // Salva rascunho automaticamente (debounce 1s)
   // Inline dos valores para evitar closure stale em montarRascunho
   useEffect(() => {
-    if (!formSujo) return
+    if (!formSujo || !CHAVE) return
     const snapshot = {
       titulo, sessaoId, categoriaId, conteudo, privado, comCredencial,
       credenciais: credenciais.map(c => ({
