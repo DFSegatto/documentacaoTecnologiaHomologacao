@@ -143,10 +143,16 @@ export interface PerfilDB {
   id: string
   user_id: string
   email: string
+  nome: string | null
   perfil: PerfilUsuario
   criado_em: string
   atualizado_em?: string
   alterado_por?: string | null
+}
+
+/** Retorna nome de exibição: usa nome se preenchido, senão o email */
+export function nomeExibicao(p: Pick<PerfilDB, 'nome' | 'email'>): string {
+  return p.nome?.trim() || p.email
 }
 
 export interface Chamado {

@@ -33,8 +33,8 @@ export default function VerRegistro({ user }: { user: User | null }) {
   const [semAcesso,   setSemAcesso]   = useState(false)
   const [confirmando, setConfirmando] = useState(false)
   const [excluindo,   setExcluindo]   = useState(false)
-  const [emailCriador, setEmailCriador] = useState<string | null>(null)
-  const [emailEditor,  setEmailEditor]  = useState<string | null>(null)
+  const [nomeCriador, setNomeCriador] = useState<string | null>(null)
+  const [nomeEditor,  setNomeEditor]  = useState<string | null>(null)
 
   useEffect(() => {
     if (!id) return
@@ -61,16 +61,21 @@ export default function VerRegistro({ user }: { user: User | null }) {
       setAnexos((anx ?? []) as Anexo[])
       setCredenciais((creds ?? []) as Credencial[])
 
-      // Busca emails do criador e do último editor via perfis_usuario
+      // Busca nome/email do criador e do último editor via perfis_usuario
       const uidsParaBuscar = [reg.criado_por, reg.editado_por].filter(Boolean) as string[]
       if (uidsParaBuscar.length > 0) {
         const { data: perfis } = await supabase
           .from('perfis_usuario')
-          .select('user_id, email')
+          .select('user_id, nome, email')
           .in('user_id', uidsParaBuscar)
-        const mapa = Object.fromEntries((perfis ?? []).map((p: { user_id: string; email: string }) => [p.user_id, p.email]))
-        setEmailCriador(mapa[reg.criado_por] ?? null)
-        if (reg.editado_por) setEmailEditor(mapa[reg.editado_por] ?? null)
+        const mapa = Object.fromEntries(
+          (perfis ?? []).map((p: { user_id: string; nome: string | null; email: string }) => [
+            p.user_id,
+            p.nome?.trim() || p.email,
+          ])
+        )
+        setNomeCriador(mapa[reg.criado_por] ?? null)
+        if (reg.editado_por) setNomeEditor(mapa[reg.editado_por] ?? null)
       }
 
       setLoading(false)
@@ -223,15 +228,15 @@ export default function VerRegistro({ user }: { user: User | null }) {
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-400 dark:text-gray-500">
               <span>
                 Criado em {formatarData(registro.criado_em)}
-                {emailCriador && (
-                  <> por <span className="text-gray-600 dark:text-gray-300 font-medium">{emailCriador}</span></>
+                {nomeCriador && (
+                  <> por <span className="text-gray-600 dark:text-gray-300 font-medium">{nomeCriador}</span></>
                 )}
               </span>
               {registro.atualizado_em !== registro.criado_em && (
                 <span>
                   · Atualizado em {formatarData(registro.atualizado_em)}
-                  {emailEditor && (
-                    <> por <span className="text-gray-600 dark:text-gray-300 font-medium">{emailEditor}</span></>
+                  {nomeEditor && (
+                    <> por <span className="text-gray-600 dark:text-gray-300 font-medium">{nomeEditor}</span></>
                   )}
                 </span>
               )}

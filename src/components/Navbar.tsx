@@ -12,7 +12,7 @@ export default function Navbar({ userEmail, user }: { userEmail?: string | null;
   const { navegar } = useNavigationGuard();
   const [menuDocsAberto, setMenuDocsAberto] = useState(false);
   const refMenuDocs = useRef<HTMLDivElement>(null);
-  const { isAdmin, isSuporte } = usePerfil(user ?? null);
+  const { isAdmin, isSuporte, nome: nomeUsuario } = usePerfil(user ?? null);
 
   useEffect(() => {
     function fecharAoClicarFora(e: MouseEvent) {
@@ -207,9 +207,9 @@ export default function Navbar({ userEmail, user }: { userEmail?: string | null;
           </Link>
           <div className="flex items-center gap-1 pl-2 border-l border-gray-100 dark:border-gray-800 ml-1">
             <ThemeToggle />
-            {userEmail && (
-              <span className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block max-w-[180px] truncate">
-                {userEmail}
+            {(nomeUsuario || userEmail) && (
+              <span className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block max-w-[180px] truncate" title={userEmail ?? undefined}>
+                {nomeUsuario || userEmail}
               </span>
             )}
             <button
