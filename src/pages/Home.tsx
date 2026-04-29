@@ -168,7 +168,7 @@ export default function Home({ user }: { user: User | null }) {
 
   return (
     <div className="min-h-screen bg-[#f8f7f4] dark:bg-gray-950">
-      <Navbar userEmail={user?.email} />
+      <Navbar userEmail={user?.email} user={user} />
       <main className="max-w-6xl mx-auto px-4 py-8">
 
         <MuralAvisos />

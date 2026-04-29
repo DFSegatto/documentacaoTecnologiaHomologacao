@@ -10,7 +10,7 @@ export default function NovoRegistro({ user }: { user: User | null }) {
   const { navegar } = useNavigationGuard()
   return (
     <div className="min-h-screen bg-[#f8f7f4] dark:bg-gray-950 flex flex-col">
-      <Navbar userEmail={user?.email} />
+      <Navbar userEmail={user?.email} user={user} />
       <main className="max-w-3xl mx-auto px-4 py-8 flex-1">
         <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 mb-6">
           <Link to="/" onClick={e => { e.preventDefault(); navegar(() => navigate('/')) }} className="hover:text-gray-600 dark:hover:text-gray-300 transition">Registros</Link>

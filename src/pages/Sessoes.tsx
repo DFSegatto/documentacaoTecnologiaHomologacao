@@ -103,7 +103,7 @@ export default function Sessoes({ user }: { user: User | null }) {
 
   return (
     <div className="min-h-screen bg-[#f8f7f4] dark:bg-gray-950 flex flex-col">
-      <Navbar userEmail={user?.email} />
+      <Navbar userEmail={user?.email} user={user} />
       <main className="max-w-2xl mx-auto px-4 py-8 flex-1">
 
         <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 mb-6">

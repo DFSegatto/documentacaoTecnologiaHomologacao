@@ -78,7 +78,7 @@ export default function EditarRegistro({ user }: { user: User | null }) {
 
   if (semPermissao) return (
     <div className="min-h-screen bg-[#f8f7f4] dark:bg-gray-950 flex flex-col">
-      <Navbar userEmail={user?.email} />
+      <Navbar userEmail={user?.email} user={user} />
       <div className="max-w-md mx-auto px-4 py-32 text-center">
         <div className="text-5xl mb-4">🔒</div>
         <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Sem permissão</h1>
@@ -95,7 +95,7 @@ export default function EditarRegistro({ user }: { user: User | null }) {
 
   if (loading) return (
     <div className="min-h-screen bg-[#f8f7f4] dark:bg-gray-950 flex flex-col">
-      <Navbar userEmail={user?.email} />
+      <Navbar userEmail={user?.email} user={user} />
       <div className="flex items-center justify-center py-32">
         <div className="w-6 h-6 border-2 border-brand-600 border-t-transparent rounded-full animate-spin" />
       </div>
@@ -104,7 +104,7 @@ export default function EditarRegistro({ user }: { user: User | null }) {
 
   if (!registro) return (
     <div className="min-h-screen bg-[#f8f7f4] dark:bg-gray-950 flex flex-col">
-      <Navbar userEmail={user?.email} />
+      <Navbar userEmail={user?.email} user={user} />
       <div className="text-center py-32">
         <p className="font-medium text-gray-700 dark:text-gray-300">Registro não encontrado</p>
         <Link to="/" className="text-sm text-brand-600 dark:text-brand-400 hover:underline mt-2 inline-block">Voltar</Link>
@@ -114,7 +114,7 @@ export default function EditarRegistro({ user }: { user: User | null }) {
 
   return (
     <div className="min-h-screen bg-[#f8f7f4] dark:bg-gray-950 flex flex-col">
-      <Navbar userEmail={user?.email} />
+      <Navbar userEmail={user?.email} user={user} />
       <main className="max-w-3xl mx-auto px-4 py-8 flex-1">
         <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 mb-6">
           <Link to="/" onClick={e => { e.preventDefault(); navegar(() => navigate('/')) }} className="hover:text-gray-600 dark:hover:text-gray-300 transition">Registros</Link>

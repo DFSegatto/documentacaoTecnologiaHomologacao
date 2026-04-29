@@ -13,6 +13,7 @@ interface RegistroCompleto {
   conteudo: string
   privado: boolean
   criado_por: string
+  editado_por: string | null
   criado_em: string
   atualizado_em: string
   sessao_id: string | null
@@ -32,6 +33,8 @@ export default function VerRegistro({ user }: { user: User | null }) {
   const [semAcesso,   setSemAcesso]   = useState(false)
   const [confirmando, setConfirmando] = useState(false)
   const [excluindo,   setExcluindo]   = useState(false)
+  const [emailCriador, setEmailCriador] = useState<string | null>(null)
+  const [emailEditor,  setEmailEditor]  = useState<string | null>(null)
 
   useEffect(() => {
     if (!id) return
@@ -57,6 +60,19 @@ export default function VerRegistro({ user }: { user: User | null }) {
       setRegistro(reg as unknown as RegistroCompleto)
       setAnexos((anx ?? []) as Anexo[])
       setCredenciais((creds ?? []) as Credencial[])
+
+      // Busca emails do criador e do último editor via perfis_usuario
+      const uidsParaBuscar = [reg.criado_por, reg.editado_por].filter(Boolean) as string[]
+      if (uidsParaBuscar.length > 0) {
+        const { data: perfis } = await supabase
+          .from('perfis_usuario')
+          .select('user_id, email')
+          .in('user_id', uidsParaBuscar)
+        const mapa = Object.fromEntries((perfis ?? []).map((p: { user_id: string; email: string }) => [p.user_id, p.email]))
+        setEmailCriador(mapa[reg.criado_por] ?? null)
+        if (reg.editado_por) setEmailEditor(mapa[reg.editado_por] ?? null)
+      }
+
       setLoading(false)
     }
     carregar()
@@ -84,7 +100,7 @@ export default function VerRegistro({ user }: { user: User | null }) {
 
   if (loading) return (
     <div className="min-h-screen bg-[#f8f7f4] dark:bg-gray-950 flex flex-col">
-      <Navbar userEmail={user?.email} />
+      <Navbar userEmail={user?.email} user={user} />
       <div className="flex items-center justify-center py-32">
         <div className="w-6 h-6 border-2 border-brand-600 border-t-transparent rounded-full animate-spin" />
       </div>
@@ -93,7 +109,7 @@ export default function VerRegistro({ user }: { user: User | null }) {
 
   if (semAcesso) return (
     <div className="min-h-screen bg-[#f8f7f4] dark:bg-gray-950 flex flex-col">
-      <Navbar userEmail={user?.email} />
+      <Navbar userEmail={user?.email} user={user} />
       <div className="max-w-md mx-auto px-4 py-32 text-center">
         <div className="text-5xl mb-4">🔒</div>
         <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Acesso restrito</h1>
@@ -118,18 +134,18 @@ export default function VerRegistro({ user }: { user: User | null }) {
 
   return (
     <div className="min-h-screen bg-[#f8f7f4] dark:bg-gray-950 flex flex-col">
-      <Navbar userEmail={user?.email} />
+      <Navbar userEmail={user?.email} user={user} />
 
       <main className="max-w-3xl mx-auto px-4 py-8 flex-1">
-        <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 mb-6">
-          <Link to="/" className="hover:text-gray-600 dark:hover:text-gray-300 transition">Registros</Link>
-          <span>/</span>
-          <span className="text-gray-700 dark:text-gray-200 truncate max-w-xs">{registro.titulo}</span>
+        <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 mb-6 min-w-0 overflow-hidden">
+          <Link to="/" className="hover:text-gray-600 dark:hover:text-gray-300 transition shrink-0">Registros</Link>
+          <span className="shrink-0">/</span>
+          <span className="text-gray-700 dark:text-gray-200 truncate min-w-0">{registro.titulo}</span>
         </div>
 
         <article className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-8">
           <div className="mb-6">
-            <div className="flex items-center justify-between gap-4 mb-3 flex-wrap">
+            <div className="flex items-start justify-between gap-3 mb-3 flex-wrap">
               <div className="flex items-center gap-2 flex-wrap">
                 {/* Badge privado */}
                 {registro.privado && (
@@ -204,12 +220,22 @@ export default function VerRegistro({ user }: { user: User | null }) {
             </div>
 
             <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 tracking-tight mb-2">{registro.titulo}</h1>
-            <p className="text-sm text-gray-400 dark:text-gray-500">
-              Criado em {formatarData(registro.criado_em)}
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-400 dark:text-gray-500">
+              <span>
+                Criado em {formatarData(registro.criado_em)}
+                {emailCriador && (
+                  <> por <span className="text-gray-600 dark:text-gray-300 font-medium">{emailCriador}</span></>
+                )}
+              </span>
               {registro.atualizado_em !== registro.criado_em && (
-                <> · Atualizado em {formatarData(registro.atualizado_em)}</>
+                <span>
+                  · Atualizado em {formatarData(registro.atualizado_em)}
+                  {emailEditor && (
+                    <> por <span className="text-gray-600 dark:text-gray-300 font-medium">{emailEditor}</span></>
+                  )}
+                </span>
               )}
-            </p>
+            </div>
           </div>
 
           <div className="h-px bg-gray-100 dark:bg-gray-800 mb-6" />

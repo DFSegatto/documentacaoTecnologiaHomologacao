@@ -4,12 +4,15 @@ import { useNavigationGuard } from "../context/NavigationGuardContext";
 import { supabase } from "../lib/supabase";
 import { DOCS_SENIOR_NOTAS_VERSAO } from "../lib/documentacaoSenior";
 import ThemeToggle from "./ThemeToggle";
+import { usePerfil } from "../hooks/usePerfil";
+import type { User } from "@supabase/supabase-js";
 
-export default function Navbar({ userEmail }: { userEmail?: string | null }) {
+export default function Navbar({ userEmail, user }: { userEmail?: string | null; user?: User | null }) {
   const navigate = useNavigate();
   const { navegar } = useNavigationGuard();
   const [menuDocsAberto, setMenuDocsAberto] = useState(false);
   const refMenuDocs = useRef<HTMLDivElement>(null);
+  const { isAdmin, isSuporte } = usePerfil(user ?? null);
 
   useEffect(() => {
     function fecharAoClicarFora(e: MouseEvent) {
@@ -53,6 +56,30 @@ export default function Navbar({ userEmail }: { userEmail?: string | null }) {
         </Link>
 
         <div className="flex items-center gap-1">
+          <Link
+            to="/chamados"
+            onClick={e => { e.preventDefault(); navegar(() => navigate("/chamados")) }}
+            className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm px-3 py-1.5 rounded-lg transition"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-5-5.917V5a2 2 0 10-4 0v.083A6 6 0 004 11v3.159c0 .538-.214 1.055-.595 1.436L2 17h5m8 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+            <span className="hidden sm:inline">Chamados</span>
+          </Link>
+          {isAdmin && (
+            <Link
+              to="/perfis"
+              onClick={e => { e.preventDefault(); navegar(() => navigate("/perfis")) }}
+              className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm px-3 py-1.5 rounded-lg transition"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+              <span className="hidden sm:inline">Perfis</span>
+            </Link>
+          )}
           <Link
             to="/sessoes"
             onClick={e => { e.preventDefault(); navegar(() => navigate("/sessoes")) }}

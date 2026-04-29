@@ -131,3 +131,60 @@ export const CORES_CATEGORIA = [
 ]
 
 export const MAX_FILE_SIZE = 50 * 1024 * 1024
+
+// ── Chamados ─────────────────────────────────────────────────
+
+export type TipoChamado     = 'bug' | 'problema' | 'sugestao' | 'outro'
+export type PrioridadeChamado = 'baixa' | 'media' | 'alta' | 'critica'
+export type StatusChamado   = 'aberto' | 'em_andamento' | 'resolvido' | 'fechado'
+export type PerfilUsuario   = 'admin' | 'suporte' | 'usuario'
+
+export interface PerfilDB {
+  id: string
+  user_id: string
+  email: string
+  perfil: PerfilUsuario
+  criado_em: string
+}
+
+export interface Chamado {
+  id: string
+  titulo: string
+  descricao: string
+  tipo: TipoChamado
+  prioridade: PrioridadeChamado
+  status: StatusChamado
+  criado_por: string | null
+  responsavel: string | null
+  criado_em: string
+  atualizado_em: string
+}
+
+export interface ChamadoComentario {
+  id: string
+  chamado_id: string
+  conteudo: string
+  criado_por: string | null
+  criado_em: string
+}
+
+export const TIPOS_CHAMADO: { value: TipoChamado; label: string; icon: string }[] = [
+  { value: 'bug',      label: 'Bug',       icon: '🐛' },
+  { value: 'problema', label: 'Problema',  icon: '⚠️' },
+  { value: 'sugestao', label: 'Sugestão',  icon: '💡' },
+  { value: 'outro',    label: 'Outro',     icon: '📋' },
+]
+
+export const PRIORIDADES_CHAMADO: { value: PrioridadeChamado; label: string; cor: string }[] = [
+  { value: 'baixa',   label: 'Baixa',    cor: 'bg-gray-100   text-gray-700   dark:bg-gray-800   dark:text-gray-300' },
+  { value: 'media',   label: 'Média',    cor: 'bg-blue-100   text-blue-700   dark:bg-blue-950/60 dark:text-blue-300' },
+  { value: 'alta',    label: 'Alta',     cor: 'bg-orange-100 text-orange-700 dark:bg-orange-950/60 dark:text-orange-300' },
+  { value: 'critica', label: 'Crítica',  cor: 'bg-red-100    text-red-700    dark:bg-red-950/60  dark:text-red-300' },
+]
+
+export const STATUS_CHAMADO: { value: StatusChamado; label: string; cor: string }[] = [
+  { value: 'aberto',       label: 'Aberto',       cor: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-950/60 dark:text-yellow-300' },
+  { value: 'em_andamento', label: 'Em andamento',  cor: 'bg-blue-100   text-blue-700   dark:bg-blue-950/60 dark:text-blue-300' },
+  { value: 'resolvido',    label: 'Resolvido',     cor: 'bg-green-100  text-green-700  dark:bg-green-950/60 dark:text-green-300' },
+  { value: 'fechado',      label: 'Fechado',       cor: 'bg-gray-100   text-gray-500   dark:bg-gray-800   dark:text-gray-400' },
+]
