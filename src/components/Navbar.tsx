@@ -33,7 +33,7 @@ export default function Navbar({ userEmail, user }: { userEmail?: string | null;
 
   return (
     <header className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 sticky top-0 z-40">
-      <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
         <Link to="/" onClick={e => { e.preventDefault(); navegar(() => navigate("/")) }} className="flex items-center gap-2.5 group">
           <div className="w-7 h-7 rounded-lg bg-brand-600 flex items-center justify-center">
             <svg
@@ -65,7 +65,7 @@ export default function Navbar({ userEmail, user }: { userEmail?: string | null;
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                 d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-5-5.917V5a2 2 0 10-4 0v.083A6 6 0 004 11v3.159c0 .538-.214 1.055-.595 1.436L2 17h5m8 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>
-            <span className="hidden sm:inline">Chamados</span>
+            <span className="hidden sm:inline whitespace-nowrap">Chamados</span>
           </Link>
           {isAdmin && (
             <Link
@@ -77,7 +77,7 @@ export default function Navbar({ userEmail, user }: { userEmail?: string | null;
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
               </svg>
-              <span className="hidden sm:inline">Perfis</span>
+              <span className="hidden sm:inline whitespace-nowrap">Perfis</span>
             </Link>
           )}
           <Link
@@ -98,7 +98,7 @@ export default function Navbar({ userEmail, user }: { userEmail?: string | null;
                 d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
               />
             </svg>
-            <span className="hidden sm:inline">Sessões</span>
+            <span className="hidden sm:inline whitespace-nowrap">Sessões</span>
           </Link>
           <Link
             to="/categorias"
@@ -118,7 +118,7 @@ export default function Navbar({ userEmail, user }: { userEmail?: string | null;
                 d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a2 2 0 012-2z"
               />
             </svg>
-            <span className="hidden sm:inline">Categorias</span>
+            <span className="hidden sm:inline whitespace-nowrap">Categorias</span>
           </Link>
 
           <div className="relative" ref={refMenuDocs}>
@@ -127,7 +127,7 @@ export default function Navbar({ userEmail, user }: { userEmail?: string | null;
               onClick={() => setMenuDocsAberto((v) => !v)}
               aria-expanded={menuDocsAberto}
               aria-haspopup="true"
-              className={`flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg transition
+              className={`flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg transition whitespace-nowrap
                 ${menuDocsAberto ? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100" : "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
             >
               <svg
@@ -144,7 +144,7 @@ export default function Navbar({ userEmail, user }: { userEmail?: string | null;
                   d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
                 />
               </svg>
-              <span className="hidden sm:inline">Notas de versão Senior</span>
+              <span className="hidden sm:inline whitespace-nowrap">Notas de versão Senior</span>
             </button>
             {menuDocsAberto && (
               <div
