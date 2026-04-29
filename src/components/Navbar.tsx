@@ -34,7 +34,7 @@ export default function Navbar({ userEmail, user }: { userEmail?: string | null;
   return (
     <header className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 sticky top-0 z-40">
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
-        <Link to="/" onClick={e => { e.preventDefault(); navegar(() => navigate("/")) }} className="flex items-center gap-2.5 group">
+        <Link to="/" onClick={e => { e.preventDefault(); navegar(() => navigate("/")) }} className="flex items-center gap-2.5 group shrink-0">
           <div className="w-7 h-7 rounded-lg bg-brand-600 flex items-center justify-center">
             <svg
               className="w-4 h-4 text-white"
@@ -50,7 +50,7 @@ export default function Navbar({ userEmail, user }: { userEmail?: string | null;
               />
             </svg>
           </div>
-          <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 group-hover:text-brand-600 transition">
+          <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 group-hover:text-brand-600 transition whitespace-nowrap">
             Base de Conhecimento
           </span>
         </Link>
@@ -188,7 +188,7 @@ export default function Navbar({ userEmail, user }: { userEmail?: string | null;
           <Link
             to="/registros/novo"
             onClick={e => { e.preventDefault(); navegar(() => navigate("/registros/novo")) }}
-            className="flex items-center gap-1.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 py-1.5 rounded-lg transition ml-1"
+            className="flex items-center gap-1.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3.5 py-1.5 rounded-lg transition ml-1 whitespace-nowrap shrink-0"
           >
             <svg
               className="w-4 h-4"
