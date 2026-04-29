@@ -6,6 +6,7 @@ import { DOCS_SENIOR_NOTAS_VERSAO } from "../lib/documentacaoSenior";
 import ThemeToggle from "./ThemeToggle";
 import { usePerfil } from "../hooks/usePerfil";
 import { useAvisosNovos } from "../hooks/useAvisosNovos";
+import { useAlertaBanco } from "../hooks/useAlertaBanco";
 import type { User } from "@supabase/supabase-js";
 
 // ── Link de navegação padrão ─────────────────────────────────────────────────
@@ -58,6 +59,7 @@ export default function Navbar({ userEmail, user }: { userEmail?: string | null;
 
   const { isAdmin, nome: nomeUsuario } = usePerfil(user ?? null);
   const { naoLidos } = useAvisosNovos();
+  const { alerta: alertaBanco } = useAlertaBanco(isAdmin);
 
   const nav = (path: string) => (e: React.MouseEvent) => {
     e.preventDefault();
@@ -245,10 +247,18 @@ export default function Navbar({ userEmail, user }: { userEmail?: string | null;
               title={nomeUsuario || userEmail || "Minha conta"}
               className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition group"
             >
-              {/* Avatar circular com inicial */}
-              <div className="w-7 h-7 rounded-full bg-brand-100 dark:bg-brand-950/60 flex items-center justify-center text-xs font-bold text-brand-700 dark:text-brand-300 shrink-0">
-                {inicialNome}
-              </div>
+              {/* Avatar circular com inicial + bolinha de alerta do banco */}
+              <span className="relative shrink-0">
+                <div className="w-7 h-7 rounded-full bg-brand-100 dark:bg-brand-950/60 flex items-center justify-center text-xs font-bold text-brand-700 dark:text-brand-300">
+                  {inicialNome}
+                </div>
+                {alertaBanco && (
+                  <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500 border-2 border-white dark:border-gray-900" />
+                  </span>
+                )}
+              </span>
               <span className="text-sm text-gray-700 dark:text-gray-300 hidden md:block max-w-[140px] truncate">
                 {nomeUsuario || userEmail}
               </span>
@@ -289,12 +299,25 @@ export default function Navbar({ userEmail, user }: { userEmail?: string | null;
                   onClick={e => { setMenuUserAberto(false); nav("/configuracoes")(e) }}
                   className="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition"
                 >
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  Configurações
+                  <span className="relative shrink-0">
+                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    {alertaBanco && (
+                      <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500" />
+                      </span>
+                    )}
+                  </span>
+                  <span className="flex-1">Configurações</span>
+                  {alertaBanco && (
+                    <span className="text-xs font-semibold bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 rounded-full px-1.5 py-0.5 leading-none">
+                      atenção
+                    </span>
+                  )}
                 </Link>
 
                 <div className="border-t border-gray-100 dark:border-gray-800 mt-1 pt-1">
