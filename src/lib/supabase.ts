@@ -145,6 +145,8 @@ export interface PerfilDB {
   email: string
   perfil: PerfilUsuario
   criado_em: string
+  atualizado_em?: string
+  alterado_por?: string | null
 }
 
 export interface Chamado {
