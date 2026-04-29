@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import type { User } from '@supabase/supabase-js'
+import { useAvisosNovos } from '../hooks/useAvisosNovos'
 
 // ── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -214,6 +215,7 @@ function BlocoVersao({
 // ── Página principal ──────────────────────────────────────────────────────────
 
 export default function ReleaseNotes({ user }: { user: User | null }) {
+  const { marcarTodosLidos } = useAvisosNovos()
   const [versoes,  setVersoes]  = useState<VersaoAgrupada[]>([])
   const [loading,  setLoading]  = useState(true)
   const [filtro,   setFiltro]   = useState<TipoAviso | ''>('')
@@ -260,6 +262,8 @@ export default function ReleaseNotes({ user }: { user: User | null }) {
       }
 
       setVersoes(agrupadas)
+      // Marca todos como lidos ao entrar na página
+      marcarTodosLidos(lista.map(a => a.id))
       setLoading(false)
     }
     carregar()

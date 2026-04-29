@@ -5,7 +5,6 @@ import { supabase, agruparSessoes, type CategoriaDB, type Sessao, type SessaoCom
 import Navbar from '../components/Navbar'
 import CategoriaBadge from '../components/CategoriaBadge'
 import Footer from '../components/Footer'
-import MuralAvisos from '../components/MuralAvisos'
 
 interface RegistroLista {
   id: string
@@ -171,7 +170,6 @@ export default function Home({ user }: { user: User | null }) {
       <Navbar userEmail={user?.email} user={user} />
       <main className="max-w-6xl mx-auto px-4 py-8">
 
-        <MuralAvisos />
 
         {/* Header */}
         <div className="mb-6">

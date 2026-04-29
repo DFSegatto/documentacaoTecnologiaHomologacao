@@ -5,6 +5,7 @@ import { supabase } from "../lib/supabase";
 import { DOCS_SENIOR_NOTAS_VERSAO } from "../lib/documentacaoSenior";
 import ThemeToggle from "./ThemeToggle";
 import { usePerfil } from "../hooks/usePerfil";
+import { useAvisosNovos } from "../hooks/useAvisosNovos";
 import type { User } from "@supabase/supabase-js";
 
 export default function Navbar({ userEmail, user }: { userEmail?: string | null; user?: User | null }) {
@@ -13,6 +14,7 @@ export default function Navbar({ userEmail, user }: { userEmail?: string | null;
   const [menuDocsAberto, setMenuDocsAberto] = useState(false);
   const refMenuDocs = useRef<HTMLDivElement>(null);
   const { isAdmin, isSuporte, nome: nomeUsuario } = usePerfil(user ?? null);
+  const { naoLidos } = useAvisosNovos();
 
   useEffect(() => {
     function fecharAoClicarFora(e: MouseEvent) {
@@ -124,13 +126,26 @@ export default function Navbar({ userEmail, user }: { userEmail?: string | null;
           <Link
             to="/notas-de-versao"
             onClick={e => { e.preventDefault(); navegar(() => navigate("/notas-de-versao")) }}
-            className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm px-3 py-1.5 rounded-lg transition whitespace-nowrap"
+            className="relative flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm px-3 py-1.5 rounded-lg transition whitespace-nowrap"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
+            <span className="relative">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              {naoLidos > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-500 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-600" />
+                </span>
+              )}
+            </span>
             <span className="hidden sm:inline whitespace-nowrap">Notas de versão</span>
+            {naoLidos > 0 && (
+              <span className="hidden sm:inline text-xs font-semibold bg-brand-600 text-white rounded-full px-1.5 py-0.5 leading-none">
+                {naoLidos}
+              </span>
+            )}
           </Link>
           <div className="relative" ref={refMenuDocs}>
             <button
