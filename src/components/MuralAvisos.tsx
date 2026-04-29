@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 
 /** Avisos vêm da tabela `avisos` no Supabase (SQL Editor ou Table Editor). */
@@ -221,9 +222,13 @@ export default function MuralAvisos() {
                       {cfg.label}
                     </span>
                     {aviso.versao && (
-                      <span className="text-xs font-mono text-gray-400 dark:text-gray-500 bg-white/70 dark:bg-gray-900/80 px-1.5 py-0.5 rounded border border-gray-200 dark:border-gray-700">
+                      <Link
+                        to="/notas-de-versao"
+                        className="text-xs font-mono text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 bg-brand-50 dark:bg-brand-950/40 hover:bg-brand-100 dark:hover:bg-brand-950/60 px-1.5 py-0.5 rounded border border-brand-200 dark:border-brand-700 transition"
+                        title="Ver notas de versão"
+                      >
                         v{aviso.versao}
-                      </span>
+                      </Link>
                     )}
                     <span className="text-xs text-gray-400 dark:text-gray-500">
                       {formatarData(aviso.publicado_em)}

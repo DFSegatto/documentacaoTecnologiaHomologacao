@@ -121,6 +121,17 @@ export default function Navbar({ userEmail, user }: { userEmail?: string | null;
             <span className="hidden sm:inline whitespace-nowrap">Categorias</span>
           </Link>
 
+          <Link
+            to="/notas-de-versao"
+            onClick={e => { e.preventDefault(); navegar(() => navigate("/notas-de-versao")) }}
+            className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm px-3 py-1.5 rounded-lg transition whitespace-nowrap"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            <span className="hidden sm:inline whitespace-nowrap">Notas de versão</span>
+          </Link>
           <div className="relative" ref={refMenuDocs}>
             <button
               type="button"
