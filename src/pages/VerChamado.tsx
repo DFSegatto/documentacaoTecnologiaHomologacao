@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import type { User } from '@supabase/supabase-js'
 import {
-  supabase,
-  type Chamado, type ChamadoComentario,
+  supabase, nomeExibicao,
+  type Chamado, type ChamadoComentario, type PerfilDB,
   TIPOS_CHAMADO, PRIORIDADES_CHAMADO, STATUS_CHAMADO,
   type StatusChamado, type PrioridadeChamado,
 } from '../lib/supabase'
@@ -19,7 +19,8 @@ export default function VerChamado({ user }: { user: User | null }) {
   const [chamado,     setChamado]     = useState<Chamado | null>(null)
   const [comentarios, setComentarios] = useState<ChamadoComentario[]>([])
   const [loading,     setLoading]     = useState(true)
-  const [confirmando, setConfirmando] = useState(false)
+  const [confirmando,  setConfirmando]  = useState(false)
+  const [nomeCriador,  setNomeCriador]  = useState<string | null>(null)
 
   // Comentário
   const [novoComentario, setNovoComentario] = useState('')
@@ -41,6 +42,17 @@ export default function VerChamado({ user }: { user: User | null }) {
     ])
     setChamado(c as Chamado | null)
     setComentarios((coms ?? []) as ChamadoComentario[])
+
+    // Busca nome do criador do chamado
+    if (c?.criado_por) {
+      const { data: perfil } = await supabase
+        .from('perfis_usuario')
+        .select('nome, email')
+        .eq('user_id', c.criado_por)
+        .single()
+      if (perfil) setNomeCriador(nomeExibicao(perfil as PerfilDB))
+    }
+
     setLoading(false)
   }
 
@@ -224,6 +236,9 @@ export default function VerChamado({ user }: { user: User | null }) {
             <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">{chamado.titulo}</h1>
             <p className="text-xs text-gray-400 dark:text-gray-500 mb-4">
               Aberto em {formatarData(chamado.criado_em)}
+              {nomeCriador && (
+                <> por <span className="font-medium text-gray-600 dark:text-gray-300">{nomeCriador}</span></>
+              )}
             </p>
 
             {chamado.descricao && (
