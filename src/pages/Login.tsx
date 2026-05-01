@@ -26,12 +26,21 @@ export default function Login() {
     e.preventDefault();
     setErro("");
     setLoading(true);
+
+    const { data: existe, error: erroRpc } = await supabase.rpc("email_cadastrado", { p_email: email });
+
+    if (erroRpc || !existe) {
+      setLoading(false);
+      setErro("E-mail não encontrado. Verifique se está correto ou entre em contato com o administrador.");
+      return;
+    }
+
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/redefinir-senha`,
     });
     setLoading(false);
     if (error) {
-      setErro("Erro ao enviar o link. Verifique o e-mail e tente novamente.");
+      setErro("Erro ao enviar o link. Tente novamente.");
     } else {
       setLinkEnviado(true);
     }
