@@ -38,7 +38,11 @@ export default function Login() {
     const { error } = await supabase.auth.resetPasswordForEmail(email);
     setLoading(false);
     if (error) {
-      setErro("Erro ao enviar o link. Tente novamente.");
+      if (error.status === 429) {
+        setErro("Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente novamente.");
+      } else {
+        setErro("Erro ao enviar o link. Tente novamente.");
+      }
     } else {
       setLinkEnviado(true);
     }
