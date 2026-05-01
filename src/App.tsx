@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { supabase } from './lib/supabase'
 import type { User } from '@supabase/supabase-js'
 
 import Login           from './pages/Login'
+import RedefinirSenha  from './pages/RedefinirSenha'
 import Home            from './pages/Home'
 import NovoRegistro    from './pages/NovoRegistro'
 import VerRegistro     from './pages/VerRegistro'
@@ -37,15 +38,17 @@ function RotaProtegida({ estado, children }: { estado: AuthState; children: Reac
 export default function App() {
   const [user,   setUser]   = useState<User | null>(null)
   const [estado, setEstado] = useState<AuthState>('loading')
+  const navigate = useNavigate()
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       setUser(data.user ?? null)
       setEstado(data.user ? 'authenticated' : 'unauthenticated')
     })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       const u = session?.user ?? null
       setUser(u); setEstado(u ? 'authenticated' : 'unauthenticated')
+      if (event === 'PASSWORD_RECOVERY') navigate('/redefinir-senha')
     })
     return () => subscription.unsubscribe()
   }, [])
@@ -74,6 +77,7 @@ export default function App() {
       <Route path="/chamados/:id"                    element={<P><VerChamado user={user} /></P>} />
       <Route path="/perfis"                          element={<P><GerenciarPerfis user={user} /></P>} />
       <Route path="/notas-de-versao"                  element={<P><ReleaseNotes user={user} /></P>} />
+      <Route path="/redefinir-senha"                 element={<P><RedefinirSenha /></P>} />
       <Route path="*"                                element={<Navigate to="/" replace />} />
     </Routes>
   )

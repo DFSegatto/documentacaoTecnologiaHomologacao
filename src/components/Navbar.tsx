@@ -278,6 +278,17 @@ export default function Navbar({ userEmail, user }: { userEmail?: string | null;
                     </Link>
                   )}
                   <Link
+                    to="/redefinir-senha"
+                    onClick={e => { setMenuUserAberto(false); go("/redefinir-senha")(e) }}
+                    className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
+                        d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                    </svg>
+                    Alterar senha
+                  </Link>
+                  <Link
                     to="/configuracoes"
                     onClick={e => { setMenuUserAberto(false); go("/configuracoes")(e) }}
                     className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
