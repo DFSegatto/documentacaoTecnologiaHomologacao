@@ -10,6 +10,7 @@ export default function RedefinirSenha() {
   const [erro,        setErro]        = useState("");
   const [sucesso,     setSucesso]     = useState(false);
   const [loading,     setLoading]     = useState(false);
+  const [contador,    setContador]    = useState(3);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -32,7 +33,15 @@ export default function RedefinirSenha() {
       setErro("Erro ao redefinir senha. Tente novamente.");
     } else {
       setSucesso(true);
-      setTimeout(() => navigate("/"), 2000);
+      let restante = 3;
+      const intervalo = setInterval(() => {
+        restante -= 1;
+        setContador(restante);
+        if (restante <= 0) {
+          clearInterval(intervalo);
+          navigate("/");
+        }
+      }, 1000);
     }
   }
 
@@ -66,7 +75,16 @@ export default function RedefinirSenha() {
                 </svg>
               </div>
               <h2 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Senha redefinida!</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Redirecionando...</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                Redirecionando para a página inicial em{" "}
+                <span className="font-semibold text-gray-700 dark:text-gray-300">{contador}s</span>
+              </p>
+              <div className="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-1 overflow-hidden">
+                <div
+                  className="h-1 bg-brand-600 rounded-full transition-all duration-1000 ease-linear"
+                  style={{ width: `${(contador / 3) * 100}%` }}
+                />
+              </div>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
