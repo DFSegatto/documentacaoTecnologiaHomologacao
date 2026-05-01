@@ -35,9 +35,7 @@ export default function Login() {
       return;
     }
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/redefinir-senha`,
-    });
+    const { error } = await supabase.auth.resetPasswordForEmail(email);
     setLoading(false);
     if (error) {
       setErro("Erro ao enviar o link. Tente novamente.");
