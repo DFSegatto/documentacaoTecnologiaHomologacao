@@ -11,7 +11,6 @@ interface RegistroCompleto {
   id: string
   titulo: string
   conteudo: string
-  privado: boolean
   criado_por: string
   editado_por: string | null
   criado_em: string
@@ -45,7 +44,7 @@ export default function VerRegistro({ user }: { user: User | null }) {
         .eq('id', id)
         .single()
 
-      // RLS retorna erro se o usuário não tem acesso ao registro privado
+      // Retorna erro se o registro não existe ou o usuário não tem acesso
       if (error || !reg) {
         setSemAcesso(true)
         setLoading(false)
@@ -119,7 +118,7 @@ export default function VerRegistro({ user }: { user: User | null }) {
         <div className="text-5xl mb-4">🔒</div>
         <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Acesso restrito</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-          Este registro é privado e pertence a outro usuário.
+          Registro não encontrado ou sem permissão de acesso.
         </p>
         <Link to="/" className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700
           text-white font-medium px-5 py-2.5 rounded-xl text-sm transition">
@@ -134,8 +133,6 @@ export default function VerRegistro({ user }: { user: User | null }) {
   const imagens = anexos.filter(a => a.tipo === 'imagem')
   const pdfs    = anexos.filter(a => a.tipo === 'pdf')
   const ehDono = user?.id === registro.criado_por
-  /** Conteúdo público: qualquer autenticado pode editar; privado: só o criador. */
-  const podeEditar = !registro.privado || ehDono
 
   return (
     <div className="min-h-screen bg-[#f8f7f4] dark:bg-gray-950 flex flex-col">
@@ -152,17 +149,6 @@ export default function VerRegistro({ user }: { user: User | null }) {
           <div className="mb-6">
             <div className="flex items-start justify-between gap-3 mb-3 flex-wrap">
               <div className="flex items-center gap-2 flex-wrap">
-                {/* Badge privado */}
-                {registro.privado && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full
-                    text-xs font-medium bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-200">
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
-                    Privado
-                  </span>
-                )}
                 {registro.sessao && (
                   <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-md"
                     style={{ backgroundColor: registro.sessao.cor + '22', color: registro.sessao.cor }}>
@@ -176,9 +162,8 @@ export default function VerRegistro({ user }: { user: User | null }) {
                 {registro.categoria && <CategoriaBadge categoria={registro.categoria} />}
               </div>
 
-              {/* Ações: público → histórico/editar/excluir para todos; privado → só o criador. */}
-              {podeEditar && (
-                <div className="flex items-center gap-2">
+              {/* Ações: histórico/editar/excluir para todos os autenticados. */}
+              <div className="flex items-center gap-2">
                   <Link to={`/registros/${id}/historico`}
                     className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-100
                                px-3 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition">

@@ -31,7 +31,6 @@ export interface Registro {
   conteudo: string
   sessao_id: string | null
   categoria_id: string | null
-  privado: boolean
   criado_por: string
   editado_por: string | null
   criado_em: string

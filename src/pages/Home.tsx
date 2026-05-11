@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import type { User } from '@supabase/supabase-js'
 import { supabase, agruparSessoes, type CategoriaDB, type Sessao, type SessaoComFilhas } from '../lib/supabase'
@@ -11,7 +11,6 @@ interface RegistroLista {
   titulo: string
   /** Só vem do banco quando há busca por texto — lista padrão não carrega HTML completo. */
   conteudo?: string
-  privado?: boolean
   criado_em: string
   sessao: Sessao | null
   categoria: CategoriaDB | null
@@ -34,6 +33,23 @@ export default function Home({ user }: { user: User | null }) {
   const sessaoFiltro    = searchParams.get('sessao')    ?? ''
   const categoriaFiltro = searchParams.get('categoria') ?? ''
   const busca           = searchParams.get('q')         ?? ''
+
+  // Estado local do input — não dispara fetch a cada tecla
+  const [inputBusca, setInputBusca] = useState(busca)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Sincroniza input local se a URL mudar externamente (ex: voltar no histórico)
+  useEffect(() => {
+    setInputBusca(prev => prev !== busca ? busca : prev)
+  }, [busca])
+
+  function handleBuscaChange(valor: string) {
+    setInputBusca(valor)
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => {
+      setParam('q', valor)
+    }, 400)
+  }
 
   // Carrega sessões e categorias uma única vez (em paralelo)
   useEffect(() => {
@@ -88,7 +104,7 @@ export default function Home({ user }: { user: User | null }) {
     const to   = from + POR_PAGINA - 1
 
     const colunasLista =
-      'id, titulo, criado_em, privado, sessao:sessoes(id,nome,cor,parent_id), categoria:categorias(id,nome,cor)' +
+      'id, titulo, criado_em, sessao:sessoes(id,nome,cor,parent_id), categoria:categorias(id,nome,cor)' +
       (busca ? ', conteudo' : '')
 
     let query = supabase
@@ -291,7 +307,7 @@ export default function Home({ user }: { user: User | null }) {
 
             {/* Busca */}
             <div className="mb-4">
-              <input type="search" value={busca} onChange={e => setParam('q', e.target.value)}
+              <input type="search" value={inputBusca} onChange={e => handleBuscaChange(e.target.value)}
                 placeholder="Busca por título ou conteúdo..."
                 className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-sm
                            focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-transparent
@@ -329,12 +345,6 @@ export default function Home({ user }: { user: User | null }) {
                         <h2 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition truncate">
                           {r.titulo}
                         </h2>
-                        {r.privado && (
-                          <svg className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                          </svg>
-                        )}
                       </div>
                         {busca && !r.titulo.toLowerCase().includes(busca.toLowerCase()) &&
                           (r.conteudo ?? '').toLowerCase().includes(busca.toLowerCase()) && (

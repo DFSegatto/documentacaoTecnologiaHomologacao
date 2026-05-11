@@ -14,7 +14,6 @@ interface RegistroRaw {
   conteudo: string
   sessao_id: string | null
   categoria_id: string | null
-  privado: boolean
   criado_por: string
 }
 
@@ -27,15 +26,14 @@ export default function EditarRegistro({ user }: { user: User | null }) {
   const [credenciais,   setCredenciais]   = useState<CredencialForm[]>([])
   const [temCredencial, setTemCredencial] = useState(false)
   const [loading,       setLoading]       = useState(true)
-  const [semPermissao,   setSemPermissao]   = useState(false)
 
   useEffect(() => {
     if (!id) return
     async function carregar() {
-      // Busca o registro completo incluindo privado
+      // Busca o registro completo
       const { data: reg } = await supabase
         .from('registros')
-        .select('id, titulo, conteudo, sessao_id, categoria_id, privado, criado_por')
+        .select('id, titulo, conteudo, sessao_id, categoria_id, criado_por')
         .eq('id', id)
         .single()
 
@@ -43,14 +41,6 @@ export default function EditarRegistro({ user }: { user: User | null }) {
         supabase.from('anexos').select('nome, url, tipo, tamanho').eq('registro_id', id),
         supabase.from('credenciais').select('*').eq('registro_id', id).order('ordem', { ascending: true }),
       ])
-
-      // Bloqueia edição de registro privado por outro usuário
-      const { data: { user } } = await supabase.auth.getUser()
-      if ((reg as RegistroRaw).privado && (reg as RegistroRaw).criado_por !== user?.id) {
-        setSemPermissao(true)
-        setLoading(false)
-        return
-      }
 
       setRegistro(reg as RegistroRaw)
       setAnexos((anx ?? []) as ArquivoUpload[])
@@ -75,23 +65,6 @@ export default function EditarRegistro({ user }: { user: User | null }) {
     }
     carregar()
   }, [id])
-
-  if (semPermissao) return (
-    <div className="min-h-screen bg-[#f8f7f4] dark:bg-gray-950 flex flex-col">
-      <Navbar userEmail={user?.email} user={user} />
-      <div className="max-w-md mx-auto px-4 py-32 text-center">
-        <div className="text-5xl mb-4">🔒</div>
-        <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Sem permissão</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-          Este registro é privado e só pode ser editado pelo seu criador.
-        </p>
-        <Link to="/" className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700
-          text-white font-medium px-5 py-2.5 rounded-xl text-sm transition">
-          ← Voltar para registros
-        </Link>
-      </div>
-    </div>
-  )
 
   if (loading) return (
     <div className="min-h-screen bg-[#f8f7f4] dark:bg-gray-950 flex flex-col">
@@ -133,7 +106,6 @@ export default function EditarRegistro({ user }: { user: User | null }) {
             sessao_id:        registro.sessao_id    ?? '',
             categoria_id:     registro.categoria_id ?? '',
             conteudo:         registro.conteudo,
-            privado:          registro.privado,
             temCredencial,
             credenciaisExistentes: credenciais,
             anexosExistentes: anexos,

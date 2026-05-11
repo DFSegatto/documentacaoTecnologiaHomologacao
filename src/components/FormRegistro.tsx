@@ -12,7 +12,6 @@ interface RegistroFormData {
   sessao_id: string
   categoria_id: string
   conteudo: string
-  privado?: boolean
   temCredencial?: boolean
   credenciaisExistentes?: CredencialForm[]
   anexosExistentes?: ArquivoUpload[]
@@ -45,7 +44,6 @@ interface DadosRascunho {
   sessaoId: string
   categoriaId: string
   conteudo: string
-  privado: boolean
   comCredencial: boolean
   credenciais: CredencialRascunho[]
   anexos: ArquivoUpload[]
@@ -72,7 +70,6 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
   const [categoriaId,   setCategoriaId]   = useState(inicial?.categoria_id ?? '')
   const categoriaAutoSetRef = useRef(false) // true quando foi setado automaticamente ao carregar
   const [conteudo,      setConteudo]      = useState(inicial?.conteudo     ?? '')
-  const [privado,       setPrivado]       = useState(inicial?.privado      ?? false)
   const [comCredencial, setComCredencial] = useState(inicial?.temCredencial ?? false)
   const [credenciais,   setCredenciais]   = useState<CredencialForm[]>(
     inicial?.credenciaisExistentes?.length
@@ -125,7 +122,6 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
         setSessaoId(dados.sessaoId)
         setCategoriaId(dados.categoriaId)
         setConteudo(dados.conteudo)
-        setPrivado(dados.privado)
         setComCredencial(dados.comCredencial)
         if (dados.credenciais?.length) {
           setCredenciais(dados.credenciais.map(c => ({
@@ -184,10 +180,9 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
     const conteudoInicial  = inicial?.conteudo     ?? ''
     const sessaoInicial    = inicial?.sessao_id    ?? searchParams.get('sessao') ?? ''
     const categoriaInicial = inicial?.categoria_id ?? ''
-    const privadoInicial   = inicial?.privado      ?? false
 
     const categoriaAlterada = categoriaAutoSetRef.current
-      ? false  // ignorar mudança automática ao carregar
+      ? false
       : categoriaId !== categoriaInicial
 
     setFormSujo(
@@ -195,7 +190,6 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
       conteudo    !== conteudoInicial  ||
       sessaoId    !== sessaoInicial    ||
       categoriaAlterada                ||
-      privado     !== privadoInicial   ||
       comCredencial !== (inicial?.temCredencial ?? false) ||
       credenciais.some((c, i) => {
         const orig = inicial?.credenciaisExistentes?.[i]
@@ -206,7 +200,7 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
       }) ||
       anexos.length !== (inicial?.anexosExistentes?.length ?? 0)
     )
-  }, [titulo, conteudo, sessaoId, categoriaId, privado, comCredencial, credenciais, anexos, inicial, searchParams])
+  }, [titulo, conteudo, sessaoId, categoriaId, comCredencial, credenciais, anexos, inicial, searchParams])
 
   // Monta objeto de rascunho com todos os campos (sem senhas)
   function montarRascunho(): DadosRascunho {
@@ -215,7 +209,6 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
       sessaoId,
       categoriaId,
       conteudo,
-      privado,
       comCredencial,
       credenciais: credenciais.map(c => ({
         tipo:        c.tipo,
@@ -236,7 +229,7 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
   useEffect(() => {
     if (!formSujo || !CHAVE) return
     const snapshot = {
-      titulo, sessaoId, categoriaId, conteudo, privado, comCredencial,
+      titulo, sessaoId, categoriaId, conteudo, comCredencial,
       credenciais: credenciais.map(c => ({
         tipo: c.tipo, label: c.label, host: c.host, porta: c.porta,
         usuario: c.usuario, dominio: c.dominio, observacoes: c.observacoes,
@@ -251,7 +244,7 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
       } catch { /* quota */ }
     }, 1000)
     return () => clearTimeout(timer)
-  }, [titulo, sessaoId, categoriaId, conteudo, privado, comCredencial, credenciais, anexos, formSujo, CHAVE])
+  }, [titulo, sessaoId, categoriaId, conteudo, comCredencial, credenciais, anexos, formSujo, CHAVE])
 
   // Registra/remove o guard de navegação global (Navbar, breadcrumbs, etc.)
   useEffect(() => {
@@ -288,7 +281,7 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
         savedByVisibilityRef.current = true
         try {
           localStorage.setItem(CHAVE, JSON.stringify({
-            titulo, sessaoId, categoriaId, conteudo, privado, comCredencial,
+            titulo, sessaoId, categoriaId, conteudo, comCredencial,
             credenciais: credenciais.map(c => ({
               tipo: c.tipo, label: c.label, host: c.host, porta: c.porta,
               usuario: c.usuario, dominio: c.dominio, observacoes: c.observacoes,
@@ -308,7 +301,7 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
     }
     document.addEventListener('visibilitychange', handleVisibilityChange)
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
-  }, [titulo, sessaoId, categoriaId, conteudo, privado, comCredencial, credenciais, anexos, formSujo, CHAVE])
+  }, [titulo, sessaoId, categoriaId, conteudo, comCredencial, credenciais, anexos, formSujo, CHAVE])
 
   // ── Helpers de navegação com confirmação ────────────────────────────────────
   function confirmarSaida(acao: () => void) {
@@ -323,7 +316,7 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
   function salvarRascunhoESair() {
     try {
       localStorage.setItem(CHAVE, JSON.stringify({
-        titulo, sessaoId, categoriaId, conteudo, privado, comCredencial,
+        titulo, sessaoId, categoriaId, conteudo, comCredencial,
         credenciais: credenciais.map(c => ({
           tipo: c.tipo, label: c.label, host: c.host, porta: c.porta,
           usuario: c.usuario, dominio: c.dominio, observacoes: c.observacoes,
@@ -361,7 +354,6 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
     setSessaoId(rascunhoData.sessaoId)
     setCategoriaId(rascunhoData.categoriaId)
     setConteudo(rascunhoData.conteudo)
-    setPrivado(rascunhoData.privado)
     setComCredencial(rascunhoData.comCredencial)
     // Restaura credenciais (sem senha — campo fica vazio)
     if (rascunhoData.credenciais?.length) {
@@ -414,7 +406,7 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
     if (!titulo.trim()) { setErro('O título é obrigatório.'); return }
 
     const conteudoVazio = !conteudo.trim() || conteudo === '<p></p>'
-    if (conteudoVazio && !(privado && comCredencial)) {
+    if (conteudoVazio && !comCredencial) {
       setErro('O conteúdo não pode estar vazio.'); return
     }
     if (!categoriaId) { setErro('Selecione uma categoria.'); return }
@@ -434,7 +426,6 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
         sessao_id:    sessaoId    || null,
         categoria_id: categoriaId || null,
         conteudo:     conteudo === '<p></p>' ? '' : conteudo,
-        privado,
       }
 
       if (modo === 'criar') {
@@ -670,27 +661,6 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
           <div className="h-px bg-gray-200 dark:bg-gray-700 mt-2" />
         </div>
 
-        {/* Toggle Privado */}
-        <div className={`flex items-start gap-3 rounded-xl border px-4 py-3.5 transition cursor-pointer
-          ${privado ? 'bg-amber-50 dark:bg-amber-950/30 border-amber-300 dark:border-amber-700' : 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'}`}
-          onClick={() => setPrivado(v => !v)}>
-          <div className={`relative w-10 h-6 rounded-full flex-shrink-0 transition mt-0.5
-            ${privado ? 'bg-amber-500' : 'bg-gray-300 dark:bg-gray-600'}`}>
-            <div className={`absolute top-1 w-4 h-4 bg-white dark:bg-gray-200 rounded-full shadow transition-all
-              ${privado ? 'left-5' : 'left-1'}`} />
-          </div>
-          <div>
-            <p className={`text-sm font-semibold ${privado ? 'text-amber-800 dark:text-amber-200' : 'text-gray-700 dark:text-gray-300'}`}>
-              {privado ? '🔒 Registro privado' : '🌐 Registro público'}
-            </p>
-            <p className={`text-xs mt-0.5 ${privado ? 'text-amber-700 dark:text-amber-300/90' : 'text-gray-500 dark:text-gray-400'}`}>
-              {privado
-                ? 'Visível apenas para você. Ideal para credenciais e dados sensíveis.'
-                : 'Visível para toda a equipe autenticada.'}
-            </p>
-          </div>
-        </div>
-
         {/* Sessão */}
         <div>
           <div className="flex items-center justify-between mb-2">
@@ -841,9 +811,6 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Conteúdo
-            {privado && comCredencial && (
-              <span className="text-gray-400 dark:text-gray-500 font-normal ml-1">(opcional)</span>
-            )}
           </label>
           <Editor conteudo={conteudo} onChange={setConteudo} />
         </div>
