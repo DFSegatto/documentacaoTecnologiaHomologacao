@@ -206,7 +206,6 @@ export default function VerRegistro({ user }: { user: User | null }) {
                     </button>
                   )}
                 </div>
-              )}
             </div>
 
             <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 tracking-tight mb-2">{registro.titulo}</h1>
