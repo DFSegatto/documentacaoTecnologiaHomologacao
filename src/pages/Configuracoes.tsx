@@ -146,12 +146,12 @@ export default function Configuracoes({ user }: { user: User | null }) {
           'Authorization': `Bearer ${session?.access_token ?? ''}`,
         },
       })
-      const json = await resp.json()
-      if (json.ok) {
-        const extra = json.editouRegistro ? ' Edição automática realizada.' : ''
-        setMsgTeste({ ok: true, texto: `Teste concluído. ${json.diasSemMovimento} dia(s) sem atividade.${extra}` })
+      const json = await resp.json().catch(() => null)
+      if (resp.ok && json?.ok !== false) {
+        const extra = json?.editouRegistro ? ' Edição automática realizada.' : ''
+        setMsgTeste({ ok: true, texto: `Verificação concluída. ${json?.diasSemMovimento ?? 0} dia(s) sem atividade.${extra}` })
       } else {
-        setMsgTeste({ ok: false, texto: json.motivo ?? 'Erro desconhecido.' })
+        setMsgTeste({ ok: false, texto: json?.motivo ?? `Erro HTTP ${resp.status}.` })
       }
     } catch {
       setMsgTeste({ ok: false, texto: 'Não foi possível chamar a função. Verifique o deploy.' })
