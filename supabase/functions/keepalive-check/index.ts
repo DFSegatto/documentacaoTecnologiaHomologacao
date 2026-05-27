@@ -6,9 +6,20 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const DIAS_ALERTA = 5
 
+const CORS = {
+  'Access-Control-Allow-Origin':  '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+}
+
 Deno.serve(async (req: Request) => {
+  // Responde ao preflight do browser
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: CORS })
+  }
+
   if (req.method !== 'GET' && req.method !== 'POST') {
-    return new Response('Method not allowed', { status: 405 })
+    return new Response('Method not allowed', { status: 405, headers: CORS })
   }
 
   const supabase = createClient(
@@ -99,6 +110,6 @@ Deno.serve(async (req: Request) => {
         ? `Edição automática realizada no registro ${registroEditadoId}.`
         : `Banco ativo. Última atividade há ${diasSemMovimento} dia(s).`,
     }),
-    { status: 200, headers: { 'Content-Type': 'application/json' } }
+    { status: 200, headers: { 'Content-Type': 'application/json', ...CORS } }
   )
 })
