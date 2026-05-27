@@ -135,14 +135,22 @@ export default function Configuracoes({ user }: { user: User | null }) {
     setTestando(true)
     setMsgTeste(null)
     try {
-      const { data, error } = await supabase.functions.invoke('keepalive-check', {
+      const url = `${(supabase as any).supabaseUrl}/functions/v1/keepalive-check`
+      const key = (supabase as any).supabaseKey
+
+      const resp = await fetch(url, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${key}`,
+        },
       })
-      if (error) {
-        setMsgTeste({ ok: false, texto: `Erro: ${error.message}` })
+      const json = await resp.json()
+      if (resp.ok) {
+        const extra = json?.editouRegistro ? ' Edição automática realizada.' : ''
+        setMsgTeste({ ok: true, texto: `Verificação concluída. ${json?.diasSemMovimento ?? 0} dia(s) sem atividade.${extra}` })
       } else {
-        const extra = data?.editouRegistro ? ' Edição automática realizada.' : ''
-        setMsgTeste({ ok: true, texto: `Verificação concluída. ${data?.diasSemMovimento ?? 0} dia(s) sem atividade.${extra}` })
+        setMsgTeste({ ok: false, texto: `Erro HTTP ${resp.status}` })
       }
     } catch (err: any) {
       setMsgTeste({ ok: false, texto: `Erro: ${err?.message ?? 'desconhecido'}` })
