@@ -135,23 +135,14 @@ export default function Configuracoes({ user }: { user: User | null }) {
     setTestando(true)
     setMsgTeste(null)
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL as string)?.replace(/\/$/, '')
-      const fnUrl = `${supabaseUrl}/functions/v1/keepalive-check`
-
-      const resp = await fetch(fnUrl, {
+      const { data, error } = await supabase.functions.invoke('keepalive-check', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session?.access_token ?? ''}`,
-        },
       })
-      const json = await resp.json().catch(() => null)
-      if (resp.ok && json?.ok !== false) {
-        const extra = json?.editouRegistro ? ' Edição automática realizada.' : ''
-        setMsgTeste({ ok: true, texto: `Verificação concluída. ${json?.diasSemMovimento ?? 0} dia(s) sem atividade.${extra}` })
+      if (error) {
+        setMsgTeste({ ok: false, texto: `Erro: ${error.message}` })
       } else {
-        setMsgTeste({ ok: false, texto: json?.motivo ?? `Erro HTTP ${resp.status}.` })
+        const extra = data?.editouRegistro ? ' Edição automática realizada.' : ''
+        setMsgTeste({ ok: true, texto: `Verificação concluída. ${data?.diasSemMovimento ?? 0} dia(s) sem atividade.${extra}` })
       }
     } catch (err: any) {
       setMsgTeste({ ok: false, texto: `Erro: ${err?.message ?? 'desconhecido'}` })
