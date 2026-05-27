@@ -135,23 +135,61 @@ export default function Configuracoes({ user }: { user: User | null }) {
     setTestando(true)
     setMsgTeste(null)
     try {
-      const url = `${(supabase as any).supabaseUrl}/functions/v1/keepalive-check`
-      const key = (supabase as any).supabaseKey
+      const { data: cfg } = await supabase
+        .from('configuracoes')
+        .select('chave, valor')
+        .in('chave', ['keepalive_usuario_padrao', 'keepalive_auto_editar'])
 
-      const resp = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${key}`,
-        },
-      })
-      const json = await resp.json()
-      if (resp.ok) {
-        const extra = json?.editouRegistro ? ' Edição automática realizada.' : ''
-        setMsgTeste({ ok: true, texto: `Verificação concluída. ${json?.diasSemMovimento ?? 0} dia(s) sem atividade.${extra}` })
-      } else {
-        setMsgTeste({ ok: false, texto: `Erro HTTP ${resp.status}` })
+      const cfgMap: Record<string, string> = {}
+      for (const row of cfg ?? []) cfgMap[row.chave] = row.valor
+      const autoEditar      = cfgMap['keepalive_auto_editar'] !== 'false'
+      const usuarioPadraoId = cfgMap['keepalive_usuario_padrao'] || null
+
+      const { data: ultimoRegistro } = await supabase
+        .from('registros')
+        .select('id, titulo, conteudo, criado_em, atualizado_em')
+        .order('atualizado_em', { ascending: false })
+        .limit(1)
+        .single()
+
+      const agora = new Date()
+      let diasSemMovimento = 0
+      let ultimaAtividade  = agora
+
+      if (ultimoRegistro) {
+        const criado     = new Date(ultimoRegistro.criado_em)
+        const atualizado = new Date(ultimoRegistro.atualizado_em)
+        ultimaAtividade  = criado > atualizado ? criado : atualizado
+        diasSemMovimento = Math.floor((agora.getTime() - ultimaAtividade.getTime()) / (1000 * 60 * 60 * 24))
       }
+
+      let editouRegistro = false
+      if (diasSemMovimento >= 5 && autoEditar && ultimoRegistro) {
+        await supabase.from('registro_historico').insert({
+          registro_id: ultimoRegistro.id,
+          titulo:      ultimoRegistro.titulo,
+          conteudo:    ultimoRegistro.conteudo,
+          editado_por: usuarioPadraoId,
+          editado_em:  agora.toISOString(),
+        })
+        const { error: errUpdate } = await supabase
+          .from('registros')
+          .update({ conteudo: ultimoRegistro.conteudo, editado_por: usuarioPadraoId })
+          .eq('id', ultimoRegistro.id)
+        if (!errUpdate) editouRegistro = true
+      }
+
+      await supabase.from('keepalive_log').insert({
+        verificado_em:      agora.toISOString(),
+        ultima_atividade:   ultimaAtividade.toISOString(),
+        dias_sem_movimento: diasSemMovimento,
+        alerta_enviado:     false,
+        editou_registro:    editouRegistro,
+      })
+
+      const extra = editouRegistro ? ' Edição automática realizada.' : ''
+      setMsgTeste({ ok: true, texto: `Verificação concluída. ${diasSemMovimento} dia(s) sem atividade.${extra}` })
+      carregarStatus()
     } catch (err: any) {
       setMsgTeste({ ok: false, texto: `Erro: ${err?.message ?? 'desconhecido'}` })
     }
