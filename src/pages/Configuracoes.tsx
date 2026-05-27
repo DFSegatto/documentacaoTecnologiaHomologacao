@@ -136,7 +136,7 @@ export default function Configuracoes({ user }: { user: User | null }) {
     setMsgTeste(null)
     try {
       const { data: { session } } = await supabase.auth.getSession()
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string
+      const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL as string)?.replace(/\/$/, '')
       const fnUrl = `${supabaseUrl}/functions/v1/keepalive-check`
 
       const resp = await fetch(fnUrl, {
@@ -153,8 +153,8 @@ export default function Configuracoes({ user }: { user: User | null }) {
       } else {
         setMsgTeste({ ok: false, texto: json?.motivo ?? `Erro HTTP ${resp.status}.` })
       }
-    } catch {
-      setMsgTeste({ ok: false, texto: 'Não foi possível chamar a função. Verifique o deploy.' })
+    } catch (err: any) {
+      setMsgTeste({ ok: false, texto: `Erro: ${err?.message ?? 'desconhecido'}` })
     }
     setTestando(false)
     carregarLogs()
