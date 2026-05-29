@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import type { User } from '@supabase/supabase-js'
 import { supabase, type Anexo, type CategoriaDB, type Sessao, type Credencial } from '../lib/supabase'
+import DOMPurify from 'dompurify'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import CategoriaBadge from '../components/CategoriaBadge'
@@ -242,7 +243,7 @@ export default function VerRegistro({ user }: { user: User | null }) {
               {credenciais.length > 0 && (
                 <div className="h-px bg-gray-100 dark:bg-gray-800 mb-5" />
               )}
-              <div className="tiptap-editor" dangerouslySetInnerHTML={{ __html: registro.conteudo }} />
+              <div className="tiptap-editor" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(registro.conteudo, { ALLOWED_TAGS: ['p','br','strong','em','u','s','h1','h2','h3','h4','ul','ol','li','blockquote','code','pre','a','img','hr','table','thead','tbody','tr','th','td','span','div'], ALLOWED_ATTR: ['href','src','alt','target','rel','class','style'], FORCE_BODY: false }) }} />
             </>
           )}
 

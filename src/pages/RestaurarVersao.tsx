@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import type { User } from '@supabase/supabase-js'
 import { supabase, type HistoricoRegistro } from '../lib/supabase'
+import DOMPurify from 'dompurify'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 
@@ -106,7 +107,7 @@ export default function RestaurarVersao({ user }: { user: User | null }) {
           <div className="px-6 py-5 max-h-96 overflow-y-auto">
             <div
               className="tiptap-editor text-sm"
-              dangerouslySetInnerHTML={{ __html: versao?.conteudo ?? '' }}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(versao?.conteudo ?? '', { ALLOWED_TAGS: ['p','br','strong','em','u','s','h1','h2','h3','h4','ul','ol','li','blockquote','code','pre','a','img','hr','table','thead','tbody','tr','th','td','span','div'], ALLOWED_ATTR: ['href','src','alt','target','rel','class','style'], FORCE_BODY: false }) }}
             />
           </div>
         </div>

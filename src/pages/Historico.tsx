@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import type { User } from '@supabase/supabase-js'
 import { supabase, type HistoricoRegistro } from '../lib/supabase'
+import DOMPurify from 'dompurify'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 
@@ -180,7 +181,7 @@ export default function Historico({ user }: { user: User | null }) {
                             </p>
                             <div
                               className="tiptap-editor text-sm text-gray-700 dark:text-gray-200 max-h-80 overflow-y-auto pr-2"
-                              dangerouslySetInnerHTML={{ __html: h.conteudo }}
+                              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(h.conteudo, { ALLOWED_TAGS: ['p','br','strong','em','u','s','h1','h2','h3','h4','ul','ol','li','blockquote','code','pre','a','img','hr','table','thead','tbody','tr','th','td','span','div'], ALLOWED_ATTR: ['href','src','alt','target','rel','class','style'], FORCE_BODY: false }) }}
                             />
                           </div>
 
