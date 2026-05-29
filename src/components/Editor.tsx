@@ -109,8 +109,27 @@ export default function Editor({ conteudo, onChange }: EditorProps) {
 
   if (!editor) return null
 
+  function handleTabKey(e: React.KeyboardEvent<HTMLDivElement>) {
+    if (e.key !== 'Tab' || !editor) return
+    e.preventDefault()
+    e.stopPropagation()
+    if (e.shiftKey) {
+      editor.chain().focus().liftListItem('listItem').run()
+    } else {
+      const inList = editor.isActive('bulletList') || editor.isActive('orderedList')
+      if (inList) {
+        editor.chain().focus().sinkListItem('listItem').run()
+      } else {
+        editor.chain().focus().insertContent('\u00a0\u00a0\u00a0\u00a0').run()
+      }
+    }
+  }
+
   return (
-    <div className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden bg-white dark:bg-gray-900">
+    <div
+      className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden bg-white dark:bg-gray-900"
+      onKeyDown={handleTabKey}
+    >
       <Toolbar editor={editor} />
       <div className="px-5 py-4 dark:bg-gray-900">
         <EditorContent editor={editor} />

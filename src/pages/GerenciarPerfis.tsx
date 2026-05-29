@@ -29,7 +29,7 @@ const PERFIS_INFO: PerfilInfo[] = [
     corBorda: 'border-gray-300 dark:border-gray-600',
     corFundo: 'bg-gray-100 dark:bg-gray-800',
     permissoes: [
-      { label: 'Ver registros públicos',                permitido: true  },
+      { label: 'Ver registros',                         permitido: true  },
       { label: 'Criar e editar registros',              permitido: true  },
       { label: 'Abrir chamados',                        permitido: true  },
       { label: 'Comentar em chamados',                  permitido: true  },
@@ -47,7 +47,7 @@ const PERFIS_INFO: PerfilInfo[] = [
     corBorda: 'border-blue-400 dark:border-blue-600',
     corFundo: 'bg-blue-100 dark:bg-blue-950/60',
     permissoes: [
-      { label: 'Ver registros públicos',                permitido: true  },
+      { label: 'Ver registros',                         permitido: true  },
       { label: 'Criar e editar registros',              permitido: true  },
       { label: 'Abrir chamados',                        permitido: true  },
       { label: 'Comentar em chamados',                  permitido: true  },
@@ -65,7 +65,7 @@ const PERFIS_INFO: PerfilInfo[] = [
     corBorda: 'border-purple-400 dark:border-purple-600',
     corFundo: 'bg-purple-100 dark:bg-purple-950/60',
     permissoes: [
-      { label: 'Ver registros públicos',                permitido: true  },
+      { label: 'Ver registros',                         permitido: true  },
       { label: 'Criar e editar registros',              permitido: true  },
       { label: 'Abrir chamados',                        permitido: true  },
       { label: 'Comentar em chamados',                  permitido: true  },

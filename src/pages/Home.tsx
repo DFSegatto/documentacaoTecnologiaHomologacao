@@ -34,21 +34,41 @@ export default function Home({ user }: { user: User | null }) {
   const categoriaFiltro = searchParams.get('categoria') ?? ''
   const busca           = searchParams.get('q')         ?? ''
 
-  // Estado local do input — não dispara fetch a cada tecla
+  // Estado local do input — busca instantânea com debounce de 1500ms
   const [inputBusca, setInputBusca] = useState(busca)
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const searchInputRef  = useRef<HTMLInputElement>(null)
+  const debounceRef     = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // Controla se o foco deve ser mantido (false só quando o usuário clicar fora)
+  const manterFocoRef   = useRef(false)
 
   // Sincroniza input local se a URL mudar externamente (ex: voltar no histórico)
   useEffect(() => {
     setInputBusca(prev => prev !== busca ? busca : prev)
   }, [busca])
 
+  // Mantém o foco no input após qualquer re-render causado pela busca
+  useEffect(() => {
+    if (manterFocoRef.current) {
+      requestAnimationFrame(() => searchInputRef.current?.focus())
+    }
+  })
+
   function handleBuscaChange(valor: string) {
+    manterFocoRef.current = true
     setInputBusca(valor)
+
+    // Cancela o debounce anterior
     if (debounceRef.current) clearTimeout(debounceRef.current)
+
+    // Dispara a busca após 1500ms sem digitação
     debounceRef.current = setTimeout(() => {
       setParam('q', valor)
-    }, 400)
+    }, 1500)
+  }
+
+  function handleBuscaBlur() {
+    // Só perde o foco se o usuário clicou fora — não por re-renders
+    manterFocoRef.current = false
   }
 
   // Carrega sessões e categorias uma única vez (em paralelo)
@@ -307,7 +327,10 @@ export default function Home({ user }: { user: User | null }) {
 
             {/* Busca */}
             <div className="mb-4">
-              <input type="search" value={inputBusca} onChange={e => handleBuscaChange(e.target.value)}
+              <input ref={searchInputRef} type="search" value={inputBusca}
+                onChange={e => handleBuscaChange(e.target.value)}
+                onBlur={handleBuscaBlur}
+                onFocus={() => { manterFocoRef.current = true }}
                 placeholder="Busca por título ou conteúdo..."
                 className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-sm
                            focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-transparent
