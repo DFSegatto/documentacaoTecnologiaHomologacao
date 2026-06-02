@@ -188,6 +188,16 @@ export default function Navbar({ userEmail, user }: { userEmail?: string | null;
                   </svg>
                   SQL Builder
                 </button>
+                <button
+                  onClick={() => { navegar(() => navigate('/senior/webservices')); setMenuSeniorAberto(false) }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                >
+                  <svg className="w-3.5 h-3.5 shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  Webservices SOAP
+                </button>
                 <div className="h-px bg-gray-100 dark:bg-gray-800 mx-4" />
                 {DOCS_SENIOR_NOTAS_VERSAO.map(doc => (
                   <a key={doc.id} href={doc.url} target="_blank" rel="noopener noreferrer"
