@@ -178,6 +178,17 @@ export default function Navbar({ userEmail, user }: { userEmail?: string | null;
                 <p className="px-4 py-2.5 text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest bg-gray-50 dark:bg-gray-800/60 border-b border-gray-100 dark:border-gray-800">
                   Notas de versão Senior
                 </p>
+                <button
+                  onClick={() => { navegar(() => navigate('/senior/sql-builder')); setMenuSeniorAberto(false) }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                >
+                  <svg className="w-3.5 h-3.5 shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                  </svg>
+                  SQL Builder
+                </button>
+                <div className="h-px bg-gray-100 dark:bg-gray-800 mx-4" />
                 {DOCS_SENIOR_NOTAS_VERSAO.map(doc => (
                   <a key={doc.id} href={doc.url} target="_blank" rel="noopener noreferrer"
                     onClick={() => setMenuSeniorAberto(false)}

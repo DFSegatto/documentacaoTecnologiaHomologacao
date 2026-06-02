@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import type { User } from '@supabase/supabase-js'
-import { supabase, type ArquivoUpload, type Credencial } from '../lib/supabase'
-import type { CredencialForm } from '../components/FormCredencial'
+import { supabase, type ArquivoUpload } from '../lib/supabase'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import FormRegistro from '../components/FormRegistro'
@@ -23,8 +22,6 @@ export default function EditarRegistro({ user }: { user: User | null }) {
   const { navegar }     = useNavigationGuard()
   const [registro,      setRegistro]      = useState<RegistroRaw | null>(null)
   const [anexos,        setAnexos]        = useState<ArquivoUpload[]>([])
-  const [credenciais,   setCredenciais]   = useState<CredencialForm[]>([])
-  const [temCredencial, setTemCredencial] = useState(false)
   const [loading,       setLoading]       = useState(true)
 
   useEffect(() => {
@@ -46,19 +43,6 @@ export default function EditarRegistro({ user }: { user: User | null }) {
       setAnexos((anx ?? []) as ArquivoUpload[])
 
       if (creds && creds.length > 0) {
-        // Converte Credencial do banco para CredencialForm (senha vazia — cifrada não pode ser descriptografada aqui)
-        const formsCredenciais: CredencialForm[] = (creds as Credencial[]).map(c => ({
-          tipo:        c.tipo,
-          label:       c.label       ?? '',
-          host:        c.host        ?? '',
-          porta:       c.porta       ?? '',
-          usuario:     c.usuario     ?? '',
-          senha:       '',            // campo em branco — usuário preenche se quiser alterar
-          dominio:     c.dominio     ?? '',
-          observacoes: c.observacoes ?? '',
-        }))
-        setCredenciais(formsCredenciais)
-        setTemCredencial(true)
       }
 
       setLoading(false)
@@ -106,8 +90,6 @@ export default function EditarRegistro({ user }: { user: User | null }) {
             sessao_id:        registro.sessao_id    ?? '',
             categoria_id:     registro.categoria_id ?? '',
             conteudo:         registro.conteudo,
-            temCredencial,
-            credenciaisExistentes: credenciais,
             anexosExistentes: anexos,
           }}
         />

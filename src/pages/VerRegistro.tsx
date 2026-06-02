@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import type { User } from '@supabase/supabase-js'
-import { supabase, type Anexo, type CategoriaDB, type Sessao, type Credencial } from '../lib/supabase'
+import { supabase, type Anexo, type CategoriaDB, type Sessao } from '../lib/supabase'
 import DOMPurify from 'dompurify'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import CategoriaBadge from '../components/CategoriaBadge'
-import VisualizarCredencial from '../components/VisualizarCredencial'
 
 interface RegistroCompleto {
   id: string
@@ -28,7 +27,6 @@ export default function VerRegistro({ user }: { user: User | null }) {
 
   const [registro,    setRegistro]    = useState<RegistroCompleto | null>(null)
   const [anexos,      setAnexos]      = useState<Anexo[]>([])
-  const [credenciais, setCredenciais] = useState<Credencial[]>([])
   const [loading,     setLoading]     = useState(true)
   const [semAcesso,   setSemAcesso]   = useState(false)
   const [confirmando, setConfirmando] = useState(false)
@@ -52,14 +50,10 @@ export default function VerRegistro({ user }: { user: User | null }) {
         return
       }
 
-      const [{ data: anx }, { data: creds }] = await Promise.all([
-        supabase.from('anexos').select('*').eq('registro_id', id).order('criado_em'),
-        supabase.from('credenciais').select('*').eq('registro_id', id).order('ordem', { ascending: true }),
-      ])
+      const { data: anx } = await supabase.from('anexos').select('*').eq('registro_id', id).order('criado_em')
 
       setRegistro(reg as unknown as RegistroCompleto)
       setAnexos((anx ?? []) as Anexo[])
-      setCredenciais((creds ?? []) as Credencial[])
 
       // Busca nome/email do criador e do último editor via perfis_usuario
       const uidsParaBuscar = [reg.criado_por, reg.editado_por].filter(Boolean) as string[]
@@ -230,19 +224,9 @@ export default function VerRegistro({ user }: { user: User | null }) {
 
           <div className="h-px bg-gray-100 dark:bg-gray-800 mb-6" />
 
-          {/* Credenciais — sempre exibidas primeiro quando presentes */}
-          {credenciais.length > 0 && user && (
-            <div className="mb-6">
-              <VisualizarCredencial credenciais={credenciais} userId={user.id} />
-            </div>
-          )}
-
-          {/* Conteúdo — exibido abaixo das credenciais, só se tiver texto */}
+          {/* Conteúdo */}
           {registro.conteudo && registro.conteudo !== '<p></p>' && (
             <>
-              {credenciais.length > 0 && (
-                <div className="h-px bg-gray-100 dark:bg-gray-800 mb-5" />
-              )}
               <div className="tiptap-editor" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(registro.conteudo, { ALLOWED_TAGS: ['p','br','strong','em','u','s','h1','h2','h3','h4','ul','ol','li','blockquote','code','pre','a','img','hr','table','thead','tbody','tr','th','td','span','div'], ALLOWED_ATTR: ['href','src','alt','target','rel','class','style'], FORCE_BODY: false }) }} />
             </>
           )}

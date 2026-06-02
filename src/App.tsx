@@ -17,7 +17,7 @@ import Configuracoes   from './pages/Configuracoes'
 import Chamados        from './pages/Chamados'
 import VerChamado      from './pages/VerChamado'
 import GerenciarPerfis from './pages/GerenciarPerfis'
-import ReleaseNotes     from './pages/ReleaseNotes'
+import ReleaseNotes     from './pages/ReleaseNotes'import SeniorSqlBuilder from './pages/SeniorSqlBuilder'
 
 type AuthState = 'loading' | 'authenticated' | 'unauthenticated'
 
@@ -77,6 +77,7 @@ export default function App() {
       <Route path="/chamados/:id"                    element={<P><VerChamado user={user} /></P>} />
       <Route path="/perfis"                          element={<P><GerenciarPerfis user={user} /></P>} />
       <Route path="/notas-de-versao"                  element={<P><ReleaseNotes user={user} /></P>} />
+      <Route path="/senior/sql-builder"               element={<P><SeniorSqlBuilder user={user} /></P>} />
       <Route path="/redefinir-senha"                 element={<P><RedefinirSenha /></P>} />
       <Route path="*"                                element={<Navigate to="/" replace />} />
     </Routes>

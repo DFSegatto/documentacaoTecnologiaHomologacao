@@ -4,7 +4,6 @@ import { useNavigationGuard } from '../context/NavigationGuardContext'
 import { supabase, agruparSessoes, type CategoriaDB, type Sessao, type SessaoComFilhas, type ArquivoUpload } from '../lib/supabase'
 import Editor from './Editor'
 import UploadAnexos from './UploadAnexos'
-import FormCredencial, { criptografarCredencial, type CredencialForm, CREDENCIAL_VAZIA } from './FormCredencial'
 
 interface RegistroFormData {
   id?: string
@@ -12,8 +11,6 @@ interface RegistroFormData {
   sessao_id: string
   categoria_id: string
   conteudo: string
-  temCredencial?: boolean
-  credenciaisExistentes?: CredencialForm[]
   anexosExistentes?: ArquivoUpload[]
 }
 
@@ -29,23 +26,12 @@ function chaveRascunho(modo: 'criar' | 'editar', userId: string, id?: string) {
 }
 
 // Credenciais no rascunho — sem senha (dado sensível nunca vai para localStorage)
-interface CredencialRascunho {
-  tipo: string
-  label: string
-  host: string
-  porta: string
-  usuario: string
-  dominio: string
-  observacoes: string
-}
 
 interface DadosRascunho {
   titulo: string
   sessaoId: string
   categoriaId: string
   conteudo: string
-  comCredencial: boolean
-  credenciais: CredencialRascunho[]
   anexos: ArquivoUpload[]
   salvoEm: string
 }
@@ -70,12 +56,6 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
   const [categoriaId,   setCategoriaId]   = useState(inicial?.categoria_id ?? '')
   const categoriaAutoSetRef = useRef(false) // true quando foi setado automaticamente ao carregar
   const [conteudo,      setConteudo]      = useState(inicial?.conteudo     ?? '')
-  const [comCredencial, setComCredencial] = useState(inicial?.temCredencial ?? false)
-  const [credenciais,   setCredenciais]   = useState<CredencialForm[]>(
-    inicial?.credenciaisExistentes?.length
-      ? inicial.credenciaisExistentes
-      : [{ ...CREDENCIAL_VAZIA }]
-  )
   const [anexos,        setAnexos]        = useState<ArquivoUpload[]>(inicial?.anexosExistentes ?? [])
   const [sessoes,       setSessoes]       = useState<Sessao[]>([])
   const [arvore,        setArvore]        = useState<SessaoComFilhas[]>([])
@@ -105,7 +85,6 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
       const rascunhoTemConteudo =
         dados.titulo.trim() ||
         dados.conteudo.trim() ||
-        dados.credenciais?.length > 0 ||
         dados.anexos?.length > 0
 
       if (!rascunhoTemConteudo) return
@@ -122,19 +101,6 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
         setSessaoId(dados.sessaoId)
         setCategoriaId(dados.categoriaId)
         setConteudo(dados.conteudo)
-        setComCredencial(dados.comCredencial)
-        if (dados.credenciais?.length) {
-          setCredenciais(dados.credenciais.map(c => ({
-            tipo:        c.tipo as CredencialForm['tipo'],
-            label:       c.label,
-            host:        c.host,
-            porta:       c.porta,
-            usuario:     c.usuario,
-            senha:       '',
-            dominio:     c.dominio,
-            observacoes: c.observacoes,
-          })))
-        }
         if (dados.anexos?.length) setAnexos(dados.anexos)
       } else {
         // Nova sessão — pergunta ao usuário
@@ -190,17 +156,9 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
       conteudo    !== conteudoInicial  ||
       sessaoId    !== sessaoInicial    ||
       categoriaAlterada                ||
-      comCredencial !== (inicial?.temCredencial ?? false) ||
-      credenciais.some((c, i) => {
-        const orig = inicial?.credenciaisExistentes?.[i]
-        return !orig || c.tipo !== orig.tipo || c.label !== orig.label ||
-               c.host !== orig.host || c.porta !== orig.porta ||
-               c.usuario !== orig.usuario || c.dominio !== orig.dominio ||
-               c.observacoes !== orig.observacoes
-      }) ||
       anexos.length !== (inicial?.anexosExistentes?.length ?? 0)
     )
-  }, [titulo, conteudo, sessaoId, categoriaId, comCredencial, credenciais, anexos, inicial, searchParams])
+  }, [titulo, conteudo, sessaoId, categoriaId, anexos, inicial, searchParams])
 
   // Monta objeto de rascunho com todos os campos (sem senhas)
   function montarRascunho(): DadosRascunho {
@@ -209,16 +167,6 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
       sessaoId,
       categoriaId,
       conteudo,
-      comCredencial,
-      credenciais: credenciais.map(c => ({
-        tipo:        c.tipo,
-        label:       c.label,
-        host:        c.host,
-        porta:       c.porta,
-        usuario:     c.usuario,
-        dominio:     c.dominio,
-        observacoes: c.observacoes,
-      })),
       anexos,
       salvoEm: new Date().toISOString(),
     }
@@ -229,11 +177,7 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
   useEffect(() => {
     if (!formSujo || !CHAVE) return
     const snapshot = {
-      titulo, sessaoId, categoriaId, conteudo, comCredencial,
-      credenciais: credenciais.map(c => ({
-        tipo: c.tipo, label: c.label, host: c.host, porta: c.porta,
-        usuario: c.usuario, dominio: c.dominio, observacoes: c.observacoes,
-      })),
+      titulo, sessaoId, categoriaId, conteudo,
       anexos,
       salvoEm: new Date().toISOString(),
     } satisfies DadosRascunho
@@ -244,7 +188,7 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
       } catch { /* quota */ }
     }, 1000)
     return () => clearTimeout(timer)
-  }, [titulo, sessaoId, categoriaId, conteudo, comCredencial, credenciais, anexos, formSujo, CHAVE])
+  }, [titulo, sessaoId, categoriaId, conteudo, anexos, formSujo, CHAVE])
 
   // Registra/remove o guard de navegação global (Navbar, breadcrumbs, etc.)
   useEffect(() => {
@@ -281,11 +225,7 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
         savedByVisibilityRef.current = true
         try {
           localStorage.setItem(CHAVE, JSON.stringify({
-            titulo, sessaoId, categoriaId, conteudo, comCredencial,
-            credenciais: credenciais.map(c => ({
-              tipo: c.tipo, label: c.label, host: c.host, porta: c.porta,
-              usuario: c.usuario, dominio: c.dominio, observacoes: c.observacoes,
-            })),
+            titulo, sessaoId, categoriaId, conteudo,
             anexos,
             salvoEm: new Date().toISOString(),
           } satisfies DadosRascunho))
@@ -301,7 +241,7 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
     }
     document.addEventListener('visibilitychange', handleVisibilityChange)
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
-  }, [titulo, sessaoId, categoriaId, conteudo, comCredencial, credenciais, anexos, formSujo, CHAVE])
+  }, [titulo, sessaoId, categoriaId, conteudo, anexos, formSujo, CHAVE])
 
   // ── Helpers de navegação com confirmação ────────────────────────────────────
   function confirmarSaida(acao: () => void) {
@@ -316,11 +256,7 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
   function salvarRascunhoESair() {
     try {
       localStorage.setItem(CHAVE, JSON.stringify({
-        titulo, sessaoId, categoriaId, conteudo, comCredencial,
-        credenciais: credenciais.map(c => ({
-          tipo: c.tipo, label: c.label, host: c.host, porta: c.porta,
-          usuario: c.usuario, dominio: c.dominio, observacoes: c.observacoes,
-        })),
+        titulo, sessaoId, categoriaId, conteudo,
         anexos,
         salvoEm: new Date().toISOString(),
       } satisfies DadosRascunho))
@@ -354,20 +290,6 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
     setSessaoId(rascunhoData.sessaoId)
     setCategoriaId(rascunhoData.categoriaId)
     setConteudo(rascunhoData.conteudo)
-    setComCredencial(rascunhoData.comCredencial)
-    // Restaura credenciais (sem senha — campo fica vazio)
-    if (rascunhoData.credenciais?.length) {
-      setCredenciais(rascunhoData.credenciais.map(c => ({
-        tipo:        c.tipo as CredencialForm['tipo'],
-        label:       c.label,
-        host:        c.host,
-        porta:       c.porta,
-        usuario:     c.usuario,
-        senha:       '',   // nunca salvo no rascunho
-        dominio:     c.dominio,
-        observacoes: c.observacoes,
-      })))
-    }
     // Restaura anexos
     if (rascunhoData.anexos?.length) {
       setAnexos(rascunhoData.anexos)
@@ -387,26 +309,13 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
     sessionStorage.removeItem(`sessao_ativa_${CHAVE}`)
   }
 
-  // ── Credenciais ─────────────────────────────────────────────────────────────
-  function adicionarCredencial() {
-    setCredenciais(prev => [...prev, { ...CREDENCIAL_VAZIA }])
-  }
-
-  function atualizarCredencial(indice: number, dados: CredencialForm) {
-    setCredenciais(prev => prev.map((c, i) => i === indice ? dados : c))
-  }
-
-  function removerCredencial(indice: number) {
-    setCredenciais(prev => prev.filter((_, i) => i !== indice))
-  }
-
   // ── Submit ──────────────────────────────────────────────────────────────────
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!titulo.trim()) { setErro('O título é obrigatório.'); return }
 
     const conteudoVazio = !conteudo.trim() || conteudo === '<p></p>'
-    if (conteudoVazio && !comCredencial) {
+    if (conteudoVazio) {
       setErro('O conteúdo não pode estar vazio.'); return
     }
     if (!categoriaId) { setErro('Selecione uma categoria.'); return }
@@ -451,46 +360,6 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
             editado_por: user.id,
           })
         }
-      }
-
-      let senhasAtuais: Record<number, string> = {}
-      if (modo === 'editar' && comCredencial) {
-        const { data: credsAtuais } = await supabase
-          .from('credenciais')
-          .select('ordem, senha_cifrada')
-          .eq('registro_id', registroId)
-          .order('ordem', { ascending: true })
-        credsAtuais?.forEach((c: { ordem: number; senha_cifrada: string }) => {
-          senhasAtuais[c.ordem] = c.senha_cifrada
-        })
-      }
-
-      await supabase.from('credenciais').delete().eq('registro_id', registroId)
-
-      if (comCredencial && credenciais.length > 0) {
-        const paraInserir = await Promise.all(
-          credenciais.map(async (cred, idx) => {
-            const credParaCifrar = { ...cred }
-            if (!credParaCifrar.senha && modo === 'editar' && senhasAtuais[idx]) {
-              const cifrada = await criptografarCredencial({ ...credParaCifrar, senha: '' }, user.id)
-              return {
-                registro_id: registroId, tipo: cifrada.tipo, label: cifrada.label,
-                host: cifrada.host, porta: cifrada.porta, usuario: cifrada.usuario,
-                senha_cifrada: senhasAtuais[idx], dominio: cifrada.dominio,
-                observacoes: cifrada.observacoes, ordem: idx,
-              }
-            }
-            const cifrada = await criptografarCredencial(credParaCifrar, user.id)
-            return {
-              registro_id: registroId, tipo: cifrada.tipo, label: cifrada.label,
-              host: cifrada.host, porta: cifrada.porta, usuario: cifrada.usuario,
-              senha_cifrada: cifrada.senha_cifrada, dominio: cifrada.dominio,
-              observacoes: cifrada.observacoes, ordem: idx,
-            }
-          })
-        )
-        const { error: errCred } = await supabase.from('credenciais').insert(paraInserir)
-        if (errCred) throw errCred
       }
 
       await supabase.from('anexos').delete().eq('registro_id', registroId)
@@ -748,62 +617,6 @@ export default function FormRegistro({ inicial, modo }: FormRegistroProps) {
                 {categoriaSelecionada.nome}
               </span>
             </p>
-          )}
-        </div>
-
-        {/* Credenciais */}
-        <div className="border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden">
-          <button type="button" onClick={() => setComCredencial(v => !v)}
-            className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition">
-            <div className="flex items-center gap-3">
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0
-                ${comCredencial ? 'bg-gray-800 dark:bg-gray-700' : 'bg-gray-100 dark:bg-gray-800'}`}>
-                <svg className={`w-4 h-4 ${comCredencial ? 'text-green-400' : 'text-gray-400 dark:text-gray-500'}`}
-                  fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                    d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-                </svg>
-              </div>
-              <div className="text-left">
-                <p className="text-sm font-medium text-gray-800 dark:text-gray-100">Credenciais de acesso</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">RDP, VPN, SSH, FTP — senhas criptografadas com AES-256</p>
-              </div>
-            </div>
-            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition
-              ${comCredencial ? 'bg-gray-800 dark:bg-gray-700 border-gray-800 dark:border-gray-700' : 'border-gray-300 dark:border-gray-600'}`}>
-              {comCredencial && (
-                <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                </svg>
-              )}
-            </div>
-          </button>
-          {comCredencial && (
-            <div className="border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50">
-              <div className="p-4 space-y-3">
-                {credenciais.map((cred, idx) => (
-                  <FormCredencial
-                    key={idx}
-                    credencial={cred}
-                    indice={idx}
-                    total={credenciais.length}
-                    modoEdicao={modo === 'editar'}
-                    onChange={dados => atualizarCredencial(idx, dados)}
-                    onRemover={() => removerCredencial(idx)}
-                  />
-                ))}
-                <button type="button" onClick={adicionarCredencial}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2
-                             border-dashed border-gray-200 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-400
-                             hover:border-brand-300 dark:hover:border-brand-600 hover:text-brand-600 dark:hover:text-brand-400
-                             hover:bg-brand-50/30 dark:hover:bg-brand-950/20 transition">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                  Adicionar outro acesso
-                </button>
-              </div>
-            </div>
           )}
         </div>
 
