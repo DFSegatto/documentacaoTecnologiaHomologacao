@@ -130,19 +130,35 @@ const CATALOGO: WsCatalogo[] = [
   { modulo: 'Controladoria', classe: 'com.senior.g5.co.mct.imp.escrituracao.integracao.guiarecolhimento', descricao: 'Guias de recolhimento — exportar e modificar', url: url('com_senior_g5_co_mct_imp_escrituracao_integracao_guiarecolhimento') },
   { modulo: 'Controladoria', classe: 'com.senior.g5.co.mct.ctb.aglutinacaocomposicao',   descricao: 'Aglutinação por composição contábil', url: url('com_senior_g5_co_mct_ctb_aglutinacaocomposicao') },
   { modulo: 'Controladoria', classe: 'com.senior.g5.co.mct.ctb.aglutinacaocontabil',     descricao: 'Aglutinação contábil', url: url('com_senior_g5_co_mct_ctb_aglutinacaocontabil') },
+  { modulo: 'Controladoria', classe: 'com.senior.g5.co.mct.ctb.exportacaoperiodoiniciallcto', descricao: 'Exportação do período inicial de lançamentos contábeis', url: url('com_senior_g5_co_mct_ctb_exportacaoperiodoiniciallcto') },
+  { modulo: 'Controladoria', classe: 'com.senior.g5.co.mct.imp.gravaroutrosdocumentos',  descricao: 'Gravar outros documentos fiscais em Tributos', url: url('com_senior_g5_co_mct_imp_gravaroutrosdocumentos') },
+  // Patrimônio
+  { modulo: 'Controladoria', classe: 'com.senior.g5.co.mct.pat.bem',                     descricao: 'Bem patrimonial — exportação com controle de integração e localização', url: url('com_senior_g5_co_mct_pat_bem') },
+  { modulo: 'Controladoria', classe: 'com.senior.g5.co.mct.pat.importarbem',             descricao: 'Importação de bem patrimonial', url: url('com_senior_g5_co_mct_pat_importarbem') },
+  { modulo: 'Controladoria', classe: 'com.senior.g5.co.mct.pat.movimentarbens',          descricao: 'Movimentação de bens patrimoniais', url: url('com_senior_g5_co_mct_pat_movimentarbens') },
 
   // Mercado / Vendas
   { modulo: 'Mercado — Vendas', classe: 'com.senior.g5.co.mcm.ven.pedidos',    descricao: 'Gravar, exportar e simular pedidos de venda', url: url('com_senior_g5_co_mcm_ven_pedidos') },
   { modulo: 'Mercado — Vendas', classe: 'com.senior.g5.co.mcm.ven.orcamento',  descricao: 'Gravar, exportar e carregar orçamentos', url: url('com_senior_g5_co_mcm_ven_orcamento') },
   { modulo: 'Mercado — Vendas', classe: 'com.senior.g5.co.mcm.ven.embarque',   descricao: 'Controle de embarque', url: url('com_senior_g5_co_mcm_ven_embarque') },
   { modulo: 'Mercado — Vendas', classe: 'com.senior.g5.co.mcm.ven.notasfiscais', descricao: 'Notas fiscais de saída', url: url('com_senior_g5_co_mcm_ven_notasfiscais') },
+  { modulo: 'Mercado — Vendas', classe: 'com.senior.g5.co.mcm.ven.contratovenda',  descricao: 'Contrato de venda', url: url('com_senior_g5_co_mcm_ven_contratovenda') },
+  { modulo: 'Mercado — Vendas', classe: 'com.senior.g5.co.mcm.ven.faturas',        descricao: 'Faturas de venda', url: url('com_senior_g5_co_mcm_ven_faturas') },
+  { modulo: 'Mercado — Vendas', classe: 'com.senior.g5.co.mcm.ven.entregas',       descricao: 'Controle de entregas', url: url('com_senior_g5_co_mcm_ven_entregas') },
+  { modulo: 'Mercado — Vendas', classe: 'com.senior.g5.co.mcm.ven.analiseembarque', descricao: 'Análise de embarque', url: url('com_senior_g5_co_mcm_ven_analiseembarque') },
+  { modulo: 'Mercado — Vendas', classe: 'com.senior.g5.co.mcm.ven.notafiscalvenda', descricao: 'Nota fiscal de venda — exportação e consulta', url: url('com_senior_g5_co_mcm_ven_notafiscalvenda') },
 
   // Suprimentos / Compras
-  { modulo: 'Suprimentos — Compras', classe: 'com.senior.g5.co.mcm.cpr.ordemcompra',   descricao: 'Exportação de ordens de compra', url: url('com_senior_g5_co_mcm_cpr_ordemcompra') },
-  { modulo: 'Suprimentos — Compras', classe: 'com.senior.g5.co.mcm.cpr.cotacao',       descricao: 'Cotações de compra', url: url('com_senior_g5_co_mcm_cpr_cotacao') },
-  { modulo: 'Suprimentos — Compras', classe: 'com.senior.g5.co.mcm.est.requisicoes',   descricao: 'Requisições de estoque', url: url('com_senior_g5_co_mcm_est_requisicoes') },
+  { modulo: 'Suprimentos — Compras', classe: 'com.senior.g5.co.mcm.cpr.ordemcompra',    descricao: 'Exportação de ordens de compra', url: url('com_senior_g5_co_mcm_cpr_ordemcompra') },
+  { modulo: 'Suprimentos — Compras', classe: 'com.senior.g5.co.mcm.cpr.cotacao',        descricao: 'Cotações de compra', url: url('com_senior_g5_co_mcm_cpr_cotacao') },
+  { modulo: 'Suprimentos — Compras', classe: 'com.senior.g5.co.mcm.est.requisicoes',    descricao: 'Requisições de estoque', url: url('com_senior_g5_co_mcm_est_requisicoes') },
   { modulo: 'Suprimentos — Compras', classe: 'com.senior.g5.co.mcm.est.transferencias', descricao: 'Transferências de estoque', url: url('com_senior_g5_co_mcm_est_transferencias') },
-  { modulo: 'Suprimentos — Compras', classe: 'com.senior.g5.co.mcm.est.inventario',    descricao: 'Inventário de estoque', url: url('com_senior_g5_co_mcm_est_inventario') },
+  { modulo: 'Suprimentos — Compras', classe: 'com.senior.g5.co.mcm.est.inventario',     descricao: 'Inventário de estoque', url: url('com_senior_g5_co_mcm_est_inventario') },
+  { modulo: 'Suprimentos — Compras', classe: 'com.senior.g5.co.mcm.cpr.aprovarcotacoes',  descricao: 'Aprovar cotações de compra', url: url('com_senior_g5_co_mcm_cpr_aprovarcotacoes') },
+  { modulo: 'Suprimentos — Compras', classe: 'com.senior.g5.co.mcm.cpr.contratocompra',   descricao: 'Contrato de compra — consulta a partir de ordens geradas', url: url('com_senior_g5_co_mcm_cpr_contratocompra') },
+  { modulo: 'Suprimentos — Compras', classe: 'com.senior.g5.co.mcm.est.solicitacaocompra', descricao: 'Solicitação de compra', url: url('com_senior_g5_co_mcm_est_solicitacaocompra') },
+  { modulo: 'Suprimentos — Compras', classe: 'com.senior.g5.co.mcm.est.saldoestoque',     descricao: 'Saldo de estoque por produto/derivação/depósito com dados de compra', url: url('com_senior_g5_co_mcm_est_saldoestoque') },
+  { modulo: 'Suprimentos — Compras', classe: 'com.senior.g5.co.mcm.est.estoques',         descricao: 'Estoques — exportação e consulta', url: url('com_senior_g5_co_mcm_est_estoques') },
 
   // Financeiro
   { modulo: 'Financeiro', classe: 'com.senior.g5.co.mfi.pag.titulosPagar',      descricao: 'Títulos a pagar — gravar e consultar', url: url('com_senior_g5_co_mfi_pag_titulospagar') },
@@ -153,6 +169,11 @@ const CATALOGO: WsCatalogo[] = [
   { modulo: 'Financeiro', classe: 'com.senior.g5.co.mfi.bancos.retorno',         descricao: 'Retorno bancário', url: url('com_senior_g5_co_mfi_bancos_retorno') },
   { modulo: 'Financeiro', classe: 'com.senior.g5.co.mfi.fluxocaixa',             descricao: 'Fluxo de caixa', url: url('com_senior_g5_co_mfi_fluxocaixa') },
   { modulo: 'Financeiro', classe: 'com.senior.g5.co.mfi.ent.nfe',                descricao: 'Notas fiscais de entrada', url: url('com_senior_g5_co_mfi_ent_nfe') },
+  { modulo: 'Financeiro', classe: 'com.senior.g5.co.mfi.cpa.titulos',            descricao: 'Títulos a pagar — inclusão, alteração e exclusão (C/P avançado)', url: url('com_senior_g5_co_mfi_cpa_titulos') },
+  { modulo: 'Financeiro', classe: 'com.senior.g5.co.mfi.cre.titulos',            descricao: 'Títulos a receber — inclusão, alteração e exclusão (C/R avançado)', url: url('com_senior_g5_co_mfi_cre_titulos') },
+  { modulo: 'Financeiro', classe: 'com.senior.g5.co.mfi.tes.lancamentos',        descricao: 'Lançamentos de tesouraria', url: url('com_senior_g5_co_mfi_tes_lancamentos') },
+  { modulo: 'Financeiro', classe: 'com.senior.g5.co.mfi.tes.extrato',            descricao: 'Extrato bancário — inclusão para integração com terceiros', url: url('com_senior_g5_co_mfi_tes_extrato') },
+  { modulo: 'Financeiro', classe: 'com.senior.g5.co.mfi.tes.movimentotesouraria', descricao: 'Movimento de tesouraria', url: url('com_senior_g5_co_mfi_tes_movimentotesouraria') },
 
   // RPA
   { modulo: 'RPA', classe: 'com.senior.g5.co.ger.cad.rpa.exclusaolotacao',    descricao: 'Exclusão da lotação tributária', url: url('com_senior_g5_co_ger_cad_rpa_exclusaolotacao') },
@@ -160,6 +181,20 @@ const CATALOGO: WsCatalogo[] = [
 
   // Varejo / Integração
   { modulo: 'Varejo / Integração', classe: 'com.senior.g5.co.int.varejo.estoque', descricao: 'Estoque de varejo', url: url('com_senior_g5_co_int_varejo_estoque') },
+
+  // Custos
+  { modulo: 'Custos', classe: 'com.senior.g5.co.mcm.est.matrizdistribuicaocustos', descricao: 'Matriz de distribuição de custos', url: url('com_senior_g5_co_mcm_est_matrizdistribuicaocustos') },
+  { modulo: 'Custos', classe: 'com.senior.g5.co.mcu.ctc.consumossaldos',            descricao: 'Consumos e saldos de custos por centro de custo', url: url('com_senior_g5_co_mcu_ctc_consumossaldos') },
+  { modulo: 'Custos', classe: 'com.senior.g5.co.mct.ctb.custoprodutoperiodo',       descricao: 'Custo do produto por período contábil', url: url('com_senior_g5_co_mct_ctb_custoprodutoperiodo') },
+  { modulo: 'Custos', classe: 'com.senior.g5.co.mcu.fpr.custopadrao',               descricao: 'Custo padrão de produto', url: url('com_senior_g5_co_mcu_fpr_custopadrao') },
+  { modulo: 'Custos', classe: 'com.senior.g5.co.mcu.fpr.fichatecnica',              descricao: 'Ficha técnica de custos', url: url('com_senior_g5_co_mcu_fpr_fichatecnica') },
+
+  // Manufatura
+  { modulo: 'Manufatura', classe: 'com.senior.g5.co.mpr.cha.apontamentoopmega',    descricao: 'Apontamento de operação de OP (MEGA)', url: url('com_senior_g5_co_mpr_cha_apontamentoopmega') },
+  { modulo: 'Manufatura', classe: 'com.senior.g5.co.mpr.cha.baixacomponenteopmega', descricao: 'Baixa de componente de ordem de produção (MEGA)', url: url('com_senior_g5_co_mpr_cha_baixacomponenteopmega') },
+  { modulo: 'Manufatura', classe: 'com.senior.g5.co.mpr.cha.movimentoop',          descricao: 'Movimento de ordem de produção', url: url('com_senior_g5_co_mpr_cha_movimentoop') },
+  { modulo: 'Manufatura', classe: 'com.senior.g5.co.mpr.pcp.ordemproducao',        descricao: 'Ordem de produção (PCP) — incluir, consultar e cancelar', url: url('com_senior_g5_co_mpr_pcp_ordemproducao') },
+  { modulo: 'Manufatura', classe: 'com.senior.g5.co.mpr.cha.separacao',            descricao: 'Separação de materiais para produção', url: url('com_senior_g5_co_mpr_cha_separacao') },
 ]
 
 const MODULOS = [...new Set(CATALOGO.map(w => w.modulo))]
