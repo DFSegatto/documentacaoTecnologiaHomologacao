@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import type { User } from '@supabase/supabase-js'
 import Navbar from '../components/Navbar'
@@ -17,6 +17,13 @@ interface WsComFormulario {
   id: string; nome: string; classe: string; modulo: string; portas: Porta[]
 }
 
+
+// ── Formulário gerado por IA ──────────────────────────────────────────────────
+interface WsIA {
+  classe: string
+  porta:  string
+  secoes: Secao[]
+}
 // ── Catálogo completo (documentação oficial) ──────────────────────────────────
 interface WsCatalogo {
   classe: string; descricao: string; url: string; modulo: string
@@ -307,6 +314,236 @@ const WS_FORMULARIOS: WsComFormulario[] = [
       ]}],
     }],
   },
+  {
+    id: 'transportadora', nome: 'Transportadora', classe: 'com.senior.g5.co.ger.cad.transportadora', modulo: 'Cadastros',
+    portas: [{
+      id: 'GravarTransportadora', nome: 'GravarTransportadora', label: 'Gravar / Atualizar Transportadora',
+      secoes: [
+        { tag: 'gridTransportadora', label: 'Dados da Transportadora', campos: [
+          { tag: 'codEmp',  label: 'Empresa',             tipo: 'Integer' as const, obrigatorio: true,  descricao: '' },
+          { tag: 'codFil',  label: 'Filial',              tipo: 'Integer' as const, obrigatorio: true,  descricao: '' },
+          { tag: 'codTra',  label: 'Código',              tipo: 'Integer' as const, obrigatorio: true,  descricao: '' },
+          { tag: 'nomTra',  label: 'Nome / Razão Social', tipo: 'String'  as const, obrigatorio: true,  descricao: '' },
+          { tag: 'apeTra',  label: 'Nome Fantasia',       tipo: 'String'  as const, obrigatorio: true,  descricao: '' },
+          { tag: 'tipTra',  label: 'Tipo de Pessoa',      tipo: 'String'  as const, obrigatorio: true,  descricao: '', opcoes: 'J=Jurídica, F=Física' },
+          { tag: 'cgcCpf',  label: 'CNPJ / CPF',         tipo: 'Double'  as const, obrigatorio: false, descricao: '' },
+          { tag: 'insEst',  label: 'Insc. Estadual',      tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+          { tag: 'fonTra',  label: 'Telefone',            tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+          { tag: 'intNet',  label: 'E-mail',              tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+          { tag: 'sitTra',  label: 'Situação',            tipo: 'String'  as const, obrigatorio: false, descricao: '', opcoes: 'A=Ativo, I=Inativo' },
+          { tag: 'nrnTrc',  label: 'RNTRC',               tipo: 'String'  as const, obrigatorio: false, descricao: 'Registro Nacional de Transportadores Rodoviários de Carga' },
+          { tag: 'cifFob',  label: 'CIF/FOB',             tipo: 'String'  as const, obrigatorio: false, descricao: '', opcoes: 'C=CIF, F=FOB' },
+          { tag: 'pesMax',  label: 'Peso Máximo',         tipo: 'Double'  as const, obrigatorio: false, descricao: '' },
+          { tag: 'tipOpe',  label: 'Tipo de Operação',    tipo: 'Integer' as const, obrigatorio: false, descricao: '', opcoes: '1=Inclusão, 2=Alteração' },
+          { tag: 'ideExt',  label: 'Identificador Externo', tipo: 'String' as const, obrigatorio: false, descricao: '' },
+        ], filhos: [{ tag: 'cEP', label: 'Endereço', campos: [
+          { tag: 'endTra',  label: 'Endereço',    tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+          { tag: 'nenTra',  label: 'Número',      tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+          { tag: 'cplEnd',  label: 'Complemento', tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+          { tag: 'baiTra',  label: 'Bairro',      tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+          { tag: 'cidTra',  label: 'Cidade',      tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+          { tag: 'sigUfs',  label: 'UF',          tipo: 'String'  as const, obrigatorio: false, descricao: 'String(002)' },
+          { tag: 'cepTra',  label: 'CEP',         tipo: 'Integer' as const, obrigatorio: false, descricao: '' },
+          { tag: 'codPai',  label: 'País',        tipo: 'String'  as const, obrigatorio: false, descricao: 'String(004)' },
+        ]}] },
+        { tag: 'root', label: 'Controle', campos: [
+          { tag: 'sistemaIntegracao', label: 'Sistema Integrador', tipo: 'String' as const, obrigatorio: false, descricao: 'String(15)' },
+        ]},
+      ],
+    }],
+  },
+  {
+    id: 'servico', nome: 'Serviços', classe: 'com.senior.g5.co.ger.cad.servico', modulo: 'Cadastros',
+    portas: [{
+      id: 'Cadastrar', nome: 'Cadastrar', label: 'Cadastrar / Atualizar Serviço',
+      secoes: [{ tag: 'servico', label: 'Dados do Serviço', campos: [
+        { tag: 'codEmp',  label: 'Empresa',           tipo: 'Integer' as const, obrigatorio: false, descricao: 'Number(004)' },
+        { tag: 'codSer',  label: 'Código do Serviço', tipo: 'String'  as const, obrigatorio: false, descricao: 'String(014)' },
+        { tag: 'desSer',  label: 'Descrição',         tipo: 'String'  as const, obrigatorio: false, descricao: 'String(070)' },
+        { tag: 'desNfv',  label: 'Descrição na NF',   tipo: 'String'  as const, obrigatorio: false, descricao: 'Para impressão na nota fiscal' },
+        { tag: 'codFam',  label: 'Família',            tipo: 'String'  as const, obrigatorio: false, descricao: 'String(006)' },
+        { tag: 'uniMed',  label: 'Unidade de Medida', tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+        { tag: 'sitSer',  label: 'Situação',           tipo: 'String'  as const, obrigatorio: false, descricao: '', opcoes: 'A=Ativo, I=Inativo' },
+        { tag: 'preVen',  label: 'Preço de Venda',    tipo: 'String'  as const, obrigatorio: false, descricao: 'Decimal com vírgula. Ex: 150,00' },
+        { tag: 'preCpr',  label: 'Preço de Compra',   tipo: 'String'  as const, obrigatorio: false, descricao: 'Decimal com vírgula' },
+        { tag: 'perIss',  label: 'ISS (%)',            tipo: 'String'  as const, obrigatorio: false, descricao: 'Alíquota ISS' },
+        { tag: 'perPis',  label: 'PIS (%)',            tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+        { tag: 'perCof',  label: 'COFINS (%)',         tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+        { tag: 'perCsl',  label: 'CSLL (%)',           tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+        { tag: 'perIrf',  label: 'IRF (%)',            tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+        { tag: 'codNbs',  label: 'NBS',                tipo: 'String'  as const, obrigatorio: false, descricao: 'Nomenclatura Brasileira de Serviços' },
+        { tag: 'obsSer',  label: 'Observação',         tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+      ]}],
+    }],
+  },
+  {
+    id: 'centrocusto', nome: 'Centro de Custo', classe: 'com.senior.g5.co.ger.cad.centrocusto', modulo: 'Cadastros',
+    portas: [{
+      id: 'Exportar', nome: 'Exportar', label: 'Exportar Centros de Custo',
+      secoes: [{ tag: 'root', label: 'Parâmetros', campos: [
+        { tag: 'codEmp',               label: 'Empresa',            tipo: 'Integer' as const, obrigatorio: true,  descricao: 'Number(004)' },
+        { tag: 'codFil',               label: 'Filial',             tipo: 'Integer' as const, obrigatorio: true,  descricao: 'Number(005)' },
+        { tag: 'identificadorSistema', label: 'Sistema Integrador', tipo: 'String'  as const, obrigatorio: true,  descricao: 'String(15) — sigla do sistema de integração' },
+        { tag: 'tipoIntegracao',       label: 'Tipo de Integração', tipo: 'String'  as const, obrigatorio: true,  descricao: '', opcoes: 'T=Todos, A=Somente Alterados, E=Registro Específico' },
+        { tag: 'codCcu',               label: 'Centro de Custo',    tipo: 'String'  as const, obrigatorio: false, descricao: 'String(009) — filtro por centro específico' },
+        { tag: 'quantidadeRegistros',  label: 'Qtd. Registros',     tipo: 'Integer' as const, obrigatorio: false, descricao: 'Limite de registros a retornar' },
+      ]}],
+    }],
+  },
+  {
+    id: 'nfeentrada', nome: 'NF de Entrada (Tributos)', classe: 'com.senior.g5.co.mct.imp.gravarnotafiscalentrada', modulo: 'Controladoria',
+    portas: [{
+      id: 'GravarNotaFiscalEntrada', nome: 'GravarNotaFiscalEntrada', label: 'Gravar NF de Entrada em Tributos',
+      secoes: [{ tag: 'notaFiscal', label: 'Dados da Nota Fiscal', campos: [
+        { tag: 'codEmp',  label: 'Empresa',              tipo: 'Integer'  as const, obrigatorio: true,  descricao: '' },
+        { tag: 'codFil',  label: 'Filial',               tipo: 'Integer'  as const, obrigatorio: true,  descricao: '' },
+        { tag: 'codFor',  label: 'Fornecedor',           tipo: 'Integer'  as const, obrigatorio: true,  descricao: '' },
+        { tag: 'numNot',  label: 'Número da NF',         tipo: 'String'   as const, obrigatorio: true,  descricao: '' },
+        { tag: 'serNot',  label: 'Série',                tipo: 'String'   as const, obrigatorio: true,  descricao: '' },
+        { tag: 'datEnt',  label: 'Data de Entrada',      tipo: 'DateTime' as const, obrigatorio: true,  descricao: 'dd/mm/aaaa' },
+        { tag: 'datEmi',  label: 'Data de Emissão',      tipo: 'DateTime' as const, obrigatorio: true,  descricao: 'dd/mm/aaaa' },
+        { tag: 'tnsPro',  label: 'Transação',            tipo: 'String'   as const, obrigatorio: true,  descricao: '' },
+        { tag: 'vlrNot',  label: 'Valor Total',          tipo: 'Double'   as const, obrigatorio: true,  descricao: '' },
+        { tag: 'vlrIpi',  label: 'Valor IPI',            tipo: 'Double'   as const, obrigatorio: false, descricao: '' },
+        { tag: 'vlrIcm',  label: 'Valor ICMS',           tipo: 'Double'   as const, obrigatorio: false, descricao: '' },
+        { tag: 'vlrFre',  label: 'Valor Frete',          tipo: 'Double'   as const, obrigatorio: false, descricao: '' },
+        { tag: 'chaNfe',  label: 'Chave NF-e',           tipo: 'String'   as const, obrigatorio: false, descricao: '44 dígitos' },
+        { tag: 'codCpg',  label: 'Condição de Pagamento',tipo: 'String'   as const, obrigatorio: false, descricao: '' },
+        { tag: 'vlrPis',  label: 'Valor PIS',            tipo: 'Double'   as const, obrigatorio: false, descricao: '' },
+        { tag: 'vlrCof',  label: 'Valor COFINS',         tipo: 'Double'   as const, obrigatorio: false, descricao: '' },
+      ]}],
+    }],
+  },
+  {
+    id: 'titulosPagar', nome: 'Títulos a Pagar', classe: 'com.senior.g5.co.mfi.pag.titulosPagar', modulo: 'Financeiro',
+    portas: [{
+      id: 'GravarTitulosPagar', nome: 'GravarTitulosPagar', label: 'Gravar Títulos a Pagar',
+      secoes: [{ tag: 'tituloPagar', label: 'Dados do Título', campos: [
+        { tag: 'codEmp',  label: 'Empresa',              tipo: 'Integer'  as const, obrigatorio: true,  descricao: '' },
+        { tag: 'codFil',  label: 'Filial',               tipo: 'Integer'  as const, obrigatorio: true,  descricao: '' },
+        { tag: 'codFor',  label: 'Fornecedor',           tipo: 'Integer'  as const, obrigatorio: true,  descricao: '' },
+        { tag: 'codFpg',  label: 'Forma de Pagamento',   tipo: 'Integer'  as const, obrigatorio: true,  descricao: '' },
+        { tag: 'vlrTit',  label: 'Valor do Título',      tipo: 'Double'   as const, obrigatorio: true,  descricao: '' },
+        { tag: 'datVen',  label: 'Data de Vencimento',   tipo: 'DateTime' as const, obrigatorio: true,  descricao: 'dd/mm/aaaa' },
+        { tag: 'datEmi',  label: 'Data de Emissão',      tipo: 'DateTime' as const, obrigatorio: true,  descricao: 'dd/mm/aaaa' },
+        { tag: 'numTit',  label: 'Número do Título',     tipo: 'String'   as const, obrigatorio: false, descricao: '' },
+        { tag: 'serTit',  label: 'Série',                tipo: 'String'   as const, obrigatorio: false, descricao: '' },
+        { tag: 'hisTit',  label: 'Histórico',            tipo: 'String'   as const, obrigatorio: false, descricao: '' },
+        { tag: 'numNot',  label: 'Número da NF',         tipo: 'String'   as const, obrigatorio: false, descricao: '' },
+        { tag: 'vlrJur',  label: 'Valor de Juros',       tipo: 'Double'   as const, obrigatorio: false, descricao: '' },
+        { tag: 'vlrMul',  label: 'Valor de Multa',       tipo: 'Double'   as const, obrigatorio: false, descricao: '' },
+        { tag: 'vlrDsc',  label: 'Valor de Desconto',    tipo: 'Double'   as const, obrigatorio: false, descricao: '' },
+        { tag: 'idtReq',  label: 'ID da Requisição',     tipo: 'String'   as const, obrigatorio: false, descricao: '' },
+      ]}],
+    }],
+  },
+  {
+    id: 'titulosReceber', nome: 'Títulos a Receber', classe: 'com.senior.g5.co.mfi.rec.titulosReceber', modulo: 'Financeiro',
+    portas: [{
+      id: 'GravarTitulosReceber', nome: 'GravarTitulosReceber', label: 'Gravar Títulos a Receber',
+      secoes: [{ tag: 'tituloReceber', label: 'Dados do Título', campos: [
+        { tag: 'codEmp',  label: 'Empresa',              tipo: 'Integer'  as const, obrigatorio: true,  descricao: '' },
+        { tag: 'codFil',  label: 'Filial',               tipo: 'Integer'  as const, obrigatorio: true,  descricao: '' },
+        { tag: 'codCli',  label: 'Cliente',              tipo: 'Integer'  as const, obrigatorio: true,  descricao: '' },
+        { tag: 'codFpg',  label: 'Forma de Pagamento',   tipo: 'Integer'  as const, obrigatorio: true,  descricao: '' },
+        { tag: 'vlrTit',  label: 'Valor do Título',      tipo: 'Double'   as const, obrigatorio: true,  descricao: '' },
+        { tag: 'datVen',  label: 'Data de Vencimento',   tipo: 'DateTime' as const, obrigatorio: true,  descricao: 'dd/mm/aaaa' },
+        { tag: 'datEmi',  label: 'Data de Emissão',      tipo: 'DateTime' as const, obrigatorio: true,  descricao: 'dd/mm/aaaa' },
+        { tag: 'numTit',  label: 'Número do Título',     tipo: 'String'   as const, obrigatorio: false, descricao: '' },
+        { tag: 'serTit',  label: 'Série',                tipo: 'String'   as const, obrigatorio: false, descricao: '' },
+        { tag: 'hisTit',  label: 'Histórico',            tipo: 'String'   as const, obrigatorio: false, descricao: '' },
+        { tag: 'numNot',  label: 'Número da NF',         tipo: 'String'   as const, obrigatorio: false, descricao: '' },
+        { tag: 'vlrJur',  label: 'Valor de Juros',       tipo: 'Double'   as const, obrigatorio: false, descricao: '' },
+        { tag: 'vlrDsc',  label: 'Valor de Desconto',    tipo: 'Double'   as const, obrigatorio: false, descricao: '' },
+        { tag: 'codBan',  label: 'Banco',                tipo: 'String'   as const, obrigatorio: false, descricao: '' },
+        { tag: 'codAge',  label: 'Agência',              tipo: 'String'   as const, obrigatorio: false, descricao: '' },
+        { tag: 'idtReq',  label: 'ID da Requisição',     tipo: 'String'   as const, obrigatorio: false, descricao: '' },
+      ]}],
+    }],
+  },
+  {
+    id: 'ordemcompra', nome: 'Ordem de Compra', classe: 'com.senior.g5.co.mcm.cpr.ordemcompra', modulo: 'Suprimentos — Compras',
+    portas: [{
+      id: 'Exportar', nome: 'Exportar', label: 'Exportar Ordens de Compra',
+      secoes: [{ tag: 'root', label: 'Parâmetros', campos: [
+        { tag: 'codEmp',               label: 'Empresa',            tipo: 'Integer'  as const, obrigatorio: true,  descricao: '' },
+        { tag: 'codFil',               label: 'Filial',             tipo: 'Integer'  as const, obrigatorio: true,  descricao: '' },
+        { tag: 'identificadorSistema', label: 'Sistema Integrador', tipo: 'String'   as const, obrigatorio: true,  descricao: 'String(15)' },
+        { tag: 'tipoIntegracao',       label: 'Tipo de Integração', tipo: 'String'   as const, obrigatorio: true,  descricao: '', opcoes: 'T=Todos, A=Somente Alterados, E=Registro Específico' },
+        { tag: 'numOcp',               label: 'Número da OC',       tipo: 'Integer'  as const, obrigatorio: false, descricao: 'Filtro por ordem específica' },
+        { tag: 'datIni',               label: 'Data Inicial',       tipo: 'DateTime' as const, obrigatorio: false, descricao: 'dd/mm/aaaa' },
+        { tag: 'datFim',               label: 'Data Final',         tipo: 'DateTime' as const, obrigatorio: false, descricao: 'dd/mm/aaaa' },
+        { tag: 'quantidadeRegistros',  label: 'Qtd. Registros',     tipo: 'Integer'  as const, obrigatorio: false, descricao: 'Limite de registros' },
+      ]}],
+    }],
+  },
+  {
+    id: 'requisicoes', nome: 'Requisições de Estoque', classe: 'com.senior.g5.co.mcm.est.requisicoes', modulo: 'Suprimentos — Compras',
+    portas: [{
+      id: 'GravarRequisicoes', nome: 'GravarRequisicoes', label: 'Gravar Requisições de Estoque',
+      secoes: [{ tag: 'requisicao', label: 'Cabeçalho', campos: [
+        { tag: 'codEmp',  label: 'Empresa',              tipo: 'Integer'  as const, obrigatorio: true,  descricao: '' },
+        { tag: 'codFil',  label: 'Filial',               tipo: 'Integer'  as const, obrigatorio: true,  descricao: '' },
+        { tag: 'opeExe',  label: 'Operação',             tipo: 'String'   as const, obrigatorio: true,  descricao: '', opcoes: 'I=Incluir, A=Alterar, E=Excluir' },
+        { tag: 'numReq',  label: 'Número da Requisição', tipo: 'Integer'  as const, obrigatorio: false, descricao: 'Gerado automaticamente se omitido' },
+        { tag: 'datReq',  label: 'Data da Requisição',   tipo: 'DateTime' as const, obrigatorio: false, descricao: 'dd/mm/aaaa' },
+        { tag: 'codDep',  label: 'Depósito Origem',      tipo: 'String'   as const, obrigatorio: false, descricao: '' },
+        { tag: 'obsReq',  label: 'Observação',           tipo: 'String'   as const, obrigatorio: false, descricao: '' },
+      ], filhos: [{ tag: 'item', label: 'Itens', campos: [
+        { tag: 'codPro',  label: 'Código do Produto', tipo: 'String'  as const, obrigatorio: true,  descricao: '' },
+        { tag: 'codDer',  label: 'Derivação',         tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+        { tag: 'qtdReq',  label: 'Quantidade',        tipo: 'String'  as const, obrigatorio: true,  descricao: 'Decimal com vírgula' },
+        { tag: 'datNec',  label: 'Data Necessidade',  tipo: 'DateTime' as const, obrigatorio: false, descricao: 'dd/mm/aaaa' },
+        { tag: 'codDep',  label: 'Depósito',          tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+      ]}] }],
+    }],
+  },
+  {
+    id: 'lctocontabil', nome: 'Lançamentos Contábeis', classe: 'com.senior.g5.co.mct.ctb.importacaolctctb', modulo: 'Controladoria',
+    portas: [{
+      id: 'ImportarLancamentos', nome: 'ImportarLancamentos', label: 'Importar Lançamentos Contábeis',
+      secoes: [{ tag: 'lancamento', label: 'Dados do Lançamento', campos: [
+        { tag: 'codEmp',  label: 'Empresa',              tipo: 'Integer'  as const, obrigatorio: true,  descricao: '' },
+        { tag: 'codFil',  label: 'Filial',               tipo: 'Integer'  as const, obrigatorio: true,  descricao: '' },
+        { tag: 'datLct',  label: 'Data do Lançamento',   tipo: 'DateTime' as const, obrigatorio: true,  descricao: 'dd/mm/aaaa' },
+        { tag: 'ctaRed',  label: 'Conta Reduzida',       tipo: 'Integer'  as const, obrigatorio: true,  descricao: 'Conta contábil reduzida' },
+        { tag: 'vlrLct',  label: 'Valor',                tipo: 'Double'   as const, obrigatorio: true,  descricao: '' },
+        { tag: 'debCre',  label: 'Débito / Crédito',     tipo: 'String'   as const, obrigatorio: true,  descricao: '', opcoes: 'D=Débito, C=Crédito' },
+        { tag: 'codLot',  label: 'Lote',                 tipo: 'Integer'  as const, obrigatorio: false, descricao: '' },
+        { tag: 'hisCon',  label: 'Histórico',            tipo: 'String'   as const, obrigatorio: false, descricao: 'Descrição do lançamento' },
+        { tag: 'codCcu',  label: 'Centro de Custo',      tipo: 'String'   as const, obrigatorio: false, descricao: '' },
+        { tag: 'numDoc',  label: 'Número do Documento',  tipo: 'String'   as const, obrigatorio: false, descricao: '' },
+        { tag: 'codMoe',  label: 'Moeda',                tipo: 'String'   as const, obrigatorio: false, descricao: '' },
+        { tag: 'idtReq',  label: 'ID da Requisição',     tipo: 'String'   as const, obrigatorio: false, descricao: '' },
+      ]}],
+    }],
+  },
+  {
+    id: 'favorecido', nome: 'Favorecidos', classe: 'com.senior.g5.co.ger.cad.favorecido', modulo: 'Cadastros',
+    portas: [{
+      id: 'GravarFavorecido', nome: 'GravarFavorecido', label: 'Gravar / Atualizar Favorecido',
+      secoes: [{ tag: 'favorecido', label: 'Dados do Favorecido', campos: [
+        { tag: 'codEmp',  label: 'Empresa',         tipo: 'Integer' as const, obrigatorio: true,  descricao: '' },
+        { tag: 'codFav',  label: 'Código',          tipo: 'Integer' as const, obrigatorio: true,  descricao: '' },
+        { tag: 'nomFav',  label: 'Nome',            tipo: 'String'  as const, obrigatorio: true,  descricao: 'String(100)' },
+        { tag: 'tipFav',  label: 'Tipo de Pessoa',  tipo: 'String'  as const, obrigatorio: true,  descricao: '', opcoes: 'J=Jurídica, F=Física' },
+        { tag: 'cgcCpf',  label: 'CNPJ / CPF',     tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+        { tag: 'insEst',  label: 'Insc. Estadual',  tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+        { tag: 'endFav',  label: 'Endereço',        tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+        { tag: 'nenFav',  label: 'Número',          tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+        { tag: 'baiCid',  label: 'Bairro',          tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+        { tag: 'cidFav',  label: 'Cidade',          tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+        { tag: 'sigUfs',  label: 'UF',              tipo: 'String'  as const, obrigatorio: false, descricao: 'String(002)' },
+        { tag: 'cepFav',  label: 'CEP',             tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+        { tag: 'fonFav',  label: 'Telefone',        tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+        { tag: 'intNet',  label: 'E-mail',          tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+        { tag: 'sitFav',  label: 'Situação',        tipo: 'String'  as const, obrigatorio: false, descricao: '', opcoes: 'A=Ativo, I=Inativo' },
+        { tag: 'codBan',  label: 'Banco',           tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+        { tag: 'codAge',  label: 'Agência',         tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+        { tag: 'ccbFav',  label: 'Conta Corrente',  tipo: 'String'  as const, obrigatorio: false, descricao: '' },
+      ]}],
+    }],
+  },
 ]
 
 // ── Gerador XML ───────────────────────────────────────────────────────────────
@@ -331,6 +568,12 @@ type Aba = 'catalogo' | 'formulario'
 
 export default function SeniorWebservices({ user }: { user: User | null }) {
   const [aba, setAba] = useState<Aba>('catalogo')
+
+  // IA
+  const [wsIA,         setWsIA]         = useState<WsIA | null>(null)
+  const [gerandoIA,    setGerandoIA]    = useState(false)
+  const [erroIA,       setErroIA]       = useState<string | null>(null)
+  const [classeIA,     setClasseIA]     = useState('')
 
   // catalogo
   const [moduloFiltro, setModuloFiltro] = useState('Todos')
